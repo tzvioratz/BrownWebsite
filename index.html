@@ -305,17 +305,6 @@ fetch(url)
 
         // value should be unique ID (IMPORTANT)
         opt.value = appt.id;
-
-        // display date + time
-        const options = { 
-  weekday: 'long', // "Monday"
-  year: 'numeric', 
-  month: 'long', 
-  day: 'numeric', 
-  hour: 'numeric', 
-  minute: 'numeric' 
-  // Omit 'second' to exclude it
-};
         opt.textContent = appt.label;
         select.appendChild(opt);
       });
