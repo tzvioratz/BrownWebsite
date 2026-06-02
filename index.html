@@ -284,7 +284,7 @@ function loadAppointments() {
 
   if (!lastName || !phone) return;
 
-  const url = `${SCRIPT_URL}?action=getAppointments&firstName=&lastName=${lastName}&phone=${phone}`;
+  const url = `${SCRIPT_URL}?action=getAppointments&lastName=${lastName}&phone=${phone}`;
 
   const select = document.getElementById("appointmentSelect");
   select.innerHTML = '<option>Loading...</option>';
