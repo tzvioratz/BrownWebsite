@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Book an Appointment</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  form {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+    width: 350px;
+  }
+
+  h2 {
+    text-align: center;
+    color: #333333;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #333333;
+  }
+
+  input, textarea, button, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  button {
+    background-color: #4da6ff;
+    color: white;
+    font-weight: bold;
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #3399ff;
+  }
+  .tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+
+}
+
+.tabs button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.form-wrapper {
+  display: flex;
+  flex-direction: column; /* 👈 forces vertical stacking */
+  align-items: center;
+}
+  
+  
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  /* We use flex to center, but JS will toggle 'none' vs 'flex' */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+</style>
+</head>
+<body>
+<!-- Tabs -->
+  <div class="form-wrapper">
+<div class="tabs">
+    <button onclick="showForm('bookingForm')">Book an Appointment</button>
+    <button onclick="showForm('Notes')"> Notes / Invoicing</button>
+    <button onclick="showForm('Payment')">Payment Tracking</button>
+    <button onclick="showForm('Past')">Search Past Work</button>
+    <button onclick="showForm('Daily')">Daily Schedule </button>
+</div>
+
+<form  id="bookingForm" class="tab-form" method="POST">
+  <h2>Book an Appointment</h2>
+
+  <label for="firstName">First Name</label>
+  <input name="firstName" placeholder="John" >
+
+  <label for="lastName">Last Name*</label>
+  <input name="lastName" placeholder="Doe" required>
+
+  <label for="phone">Phone*</label>
+  <input type="tel" name="phone" placeholder="123-456-7890" required>
+
+  <label for="email">Email</label>
+  <input name="email" type="email" placeholder="email@example.com" >
+
+    <label for="address">Address*</label>
+  <input type="text" name="address" placeholder="123 Make Belive Dr, Brooklyn NY 11210" required>
+ 
+  <label for="machine">Machine*</label>
+  <input name="maxhine" type="text" >
+  
+    <label for="machine">Brand*</label>
+  <input name="Brand" type="text" >
+
+
+  <label for="extraNotes">Additional Notes</label>
+  <textarea name="extraNotes" placeholder="Any extra notes..."></textarea>
+    <input type="hidden" name="action" value="createAppointment">
+
+  <button type="submit">Book Appointment</button>
+</form>
+    
+    <form id="cancelForm" class="tab-form" method="POST" style="display:none;">
+
+  <h2>Add Note</h2>
+
+  <label>First Name</label>
+  <input name="firstName" id="cancelFirstName" required>
+
+  <label>Last Name</label>
+  <input name="lastName" id="cancelLastName" required>
+
+  <label>Phone</label>
+  <input name="phone" id="cancelPhone" required>
+
+  <label>Select Job</label>
+  <select name="appointmentId" id="appointmentSelect" required>
+    <option value="">Enter info first</option>
+  </select>
+        <input type="hidden" name="action" value="cancel">
+
+      <input type="hidden" id="canclAppointmentDate" name="appointmentDate">
+
+  <input type="hidden" name="action" value="cancel">
+  <button type="submit">Cancel Appointment</button>
+</form>
+    
+<form id="billingForm"  class="tab-form" method="POST" style="display:none;">
+  <h2>Record Payment</h2>
+  <input type="hidden" name="action" value="payBill">
+  
+  <label for="billFirstName">First Name</label>
+  <input name="firstName" id="billFirstName" placeholder="John" required>
+
+  <label for="billLastName">Last Name</label>
+  <input name="lastName" id="billLastName" placeholder="Doe" required>
+
+  <label for="billPhone">Phone</label>
+  <input type="tel" name="phone" id="billPhone" placeholder="123-456-7890" required>
+
+  <label for="amountPaid">Amount Paid ($)</label>
+  <input type="number" name="amountPaid" id="amountPaid" step="0.01" placeholder="0.00" required>
+
+  <label for="paymentMethod">Payment Method</label>
+  <select name="paymentMethod" id="paymentMethod" required>
+    <option value=""></option>
+    <option value="Cash">Cash</option>
+    <option value="Credit Card">Credit Card</option>
+    <option value="Zelle">Zelle</option>
+    <option value="Check">Check</option>
+    <option value="Waive Fee">Waive Fee</option>
+    <option value="Courtesy Credit">Courtesy Credit</option>
+  </select>
+  
+<hr style="margin:20px 0;">
+
+<button
+  type="button"
+  id="addFollowUpBtn"
+  style="
+    padding:10px 16px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+  "
+>
+  + Add Follow Up
+</button>
+
+<div
+  id="followUpSection"
+  style="
+    display:none;
+  "
+>
+
+  <h2 style="margin-top:0;">Follow Up</h2>
+
+  <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap;">
+
+    <div>
+      <label for="followUpAmount">In</label>
+      <input
+        type="number"
+        id="followUpAmount"
+        name="followUpAmount"
+        value="1"
+        min="0"
+        disabled
+        style="width:80px;"
+      >
+    </div>
+
+    <div>
+      <label for="followUpUnit">Unit</label>
+      <select
+        id="followUpUnit"
+        name="followUpUnit"
+        disabled
+      >
+        <option value="days">Day(s)</option>
+        <option value="weeks" selected>Week(s)</option>
+        <option value="months">Month(s)</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="followUpTimes">Repeat</label>
+      <input
+        type="number"
+        id="followUpTimes"
+        name="followUpTimes"
+        value="1"
+        min="0"
+        disabled
+        style="width:80px;"
+      >
+    </div>
+
+    <div style="padding-bottom:8px;">
+      time(s)
+    </div>
+
+  </div>
+
+</div>
+
+  <button type="submit">Submit</button>
+</form>
+  </div>
+  
+<!-- Add this anywhere in your <body> -->
+<div id="loading-overlay" style="display: none;">
+  <div class="spinner"></div>
+</div>
+  
+<script>
+document
+  .getElementById("addFollowUpBtn")
+  .addEventListener("click", function () {
+
+    // show section
+    document.getElementById("followUpSection").style.display = "block";
+
+    // enable fields so they submit
+    document.getElementById("followUpAmount").disabled = false;
+    document.getElementById("followUpUnit").disabled = false;
+    document.getElementById("followUpTimes").disabled = false;
+
+    // hide button
+    this.style.display = "none";
+});
+</script>
+  
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+  const forms = document.querySelectorAll('form');
+  const loader = document.getElementById('loading-overlay');
+
+  forms.forEach((form) => {
+    form.addEventListener('submit', () => {
+      // Force the display to flex
+      loader.style.display = 'flex';
+      console.log("Form submitted, loader should show.");
+    });
+  });
+
+  // Fix for the 'Back' button
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      loader.style.display = 'none';
+    }
+  });
+});
+  
+  
+  </script>
+<script>
+  const API_KEY = "N&ls4d7C$dRf0N1Di2b&7KfaYW&ah^SBy$WT#!xCbhef1jqkc#zPcKO32HGPLlq$O4%DaXeW4!L8ZZlc!RdEgmCrYMmuMkRIq7i^MB*AONX*d83r31F^7$h9D4QxvpTp"
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRMc0NzxMj3zdUiLNBYQBLKxI80AbBgXVl41NbXZcxwqkNKSnBso49e2prpnqlYJkw/exec";
+
+  document.getElementById("bookingForm").action = SCRIPT_URL;
+  document.getElementById("billingForm").action = SCRIPT_URL;
+  document.getElementById("cancelForm").action = SCRIPT_URL;
+  
+  
+document.getElementById("appointmentDate").addEventListener("change", loadTimes);
+document.querySelector("select[name='lengthMinutes']").addEventListener("change", loadTimes);
+
+  
+  
+function loadTimes() {
+  const date = document.getElementById("appointmentDate").value;
+  const length = document.querySelector("select[name='lengthMinutes']").value;
+  
+  document.getElementById("appointmentTime").innerHTML = '<option value="">Select a time</option>';
+  document.getElementById("appointmentTime").disabled = true;
+  
+ 
+
+  if (!date || !length) return;
+
+
+  const url = `${SCRIPT_URL}?action=getTimes&date=${date}&length=${length}&key=${encodeURIComponent(API_KEY)}`;
+  
+  fetch(url)
+    .then(res => res.json())
+    .then(times => {
+      const select = document.getElementById("appointmentTime");
+      select.innerHTML = '<option value="">Select a time</option>';
+      
+        document.getElementById("appointmentTime").disabled = false;
+
+      
+      times.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t;
+        opt.textContent = formatTime(t);
+        select.appendChild(opt);
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error loading available times");
+    });
+}
+  
+  function formatTime(t) {
+  const [hour, minute] = t.split(":").map(Number);
+
+  let suffix = "AM";
+  let displayHour = hour;
+
+  if (hour >= 12) {
+    suffix = "PM";
+    if (hour > 12) displayHour = hour - 12;
+  }
+
+  if (hour === 0) displayHour = 12;
+
+  return `${displayHour}:${minute.toString().padStart(2, "0")} ${suffix}`;
+}
+  
+function showForm(id) {
+  document.querySelectorAll(".tab-form")
+    .forEach(f => f.style.display = "none");
+
+  document.getElementById(id).style.display = "block";
+}
+  
+  document.getElementById("cancelPhone").addEventListener("blur", loadAppointments);
+
+function loadAppointments() {
+  const firstName = document.getElementById("cancelFirstName").value;
+  const lastName = document.getElementById("cancelLastName").value;
+  const phone = document.getElementById("cancelPhone").value;
+
+  if (!firstName || !lastName || !phone) return;
+
+  const url = `${SCRIPT_URL}?action=getAppointments&firstName=${firstName}&lastName=${lastName}&phone=${phone}`;
+
+  const select = document.getElementById("appointmentSelect");
+  select.innerHTML = '<option>Loading...</option>';
+  select.disabled = true;
+  
+fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      select.innerHTML = '<option value="">Select appointment</option>';
+
+      if (data.length === 0) {
+        select.innerHTML = '<option>No upcoming appointments</option>';
+        return;
+      }
+
+      data.forEach(appt => {
+        const opt = document.createElement("option");
+
+        // value should be unique ID (IMPORTANT)
+        opt.value = appt.id;
+
+        // display date + time
+        const options = { 
+  weekday: 'long', // "Monday"
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric', 
+  hour: 'numeric', 
+  minute: 'numeric' 
+  // Omit 'second' to exclude it
+};
+        opt.textContent = new Date(appt.dateTime).toLocaleString(undefined, options);
+        opt.dataset.datetime = appt.dateTime; //  THIS is what you're missing
+        select.appendChild(opt);
+      });
+
+      select.disabled = false;
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error loading appointments");
+    });
+  
+}
+function updateHiddenField() {
+  const select = document.getElementById("appointmentSelect");
+  const selected = select.options[select.selectedIndex];
+
+  document.getElementById("canclAppointmentDate").value =
+    selected?.dataset?.datetime || "";
+}
+
+document.getElementById("appointmentSelect")
+  .addEventListener("change", updateHiddenField);
+
+function formatDateTime(date, time) {
+  return `${date} at ${formatTime(time)}`;
+}
+</script>
+
+</body>
+  
+  
+</html>
