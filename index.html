@@ -142,7 +142,7 @@
   <input type="text" name="address" placeholder="123 Make Belive Dr, Brooklyn NY 11210" required>
  
   <label for="machine">Machine*</label>
-  <input name="maxhine" type="text" >
+  <input name="machine" type="text" >
   
     <label for="machine">Brand*</label>
   <input name="Brand" type="text" >
@@ -155,12 +155,9 @@
   <button type="submit">Book Appointment</button>
 </form>
     
-    <form id="cancelForm" class="tab-form" method="POST" style="display:none;">
+    <form id="Notes" class="tab-form" method="POST" style="display:none;">
 
   <h2>Add Note</h2>
-
-  <label>First Name</label>
-  <input name="firstName" id="cancelFirstName" required>
 
   <label>Last Name</label>
   <input name="lastName" id="cancelLastName" required>
@@ -172,20 +169,25 @@
   <select name="appointmentId" id="appointmentSelect" required>
     <option value="">Enter info first</option>
   </select>
-        <input type="hidden" name="action" value="cancel">
+        
+          <label for="extraNotes">Additional Notes</label>
+  <textarea name="extraNotes" placeholder="Any extra notes..."></textarea>
+        
+         <label>Price</label>
+  <input type="number" name="price" id="price" >
+        
+        
 
-      <input type="hidden" id="canclAppointmentDate" name="appointmentDate">
+      <input type="hidden" id="jobID" name="jobID">
 
-  <input type="hidden" name="action" value="cancel">
-  <button type="submit">Cancel Appointment</button>
+  
+  <button type="submit" name="action" value="notes">Add Note</button>
+<button type="submit" name="action" value="sendInvoice">Record Note and Send Invoice</button>
 </form>
     
-<form id="billingForm"  class="tab-form" method="POST" style="display:none;">
+<form id="Payment"  class="tab-form" method="POST" style="display:none;">
   <h2>Record Payment</h2>
   <input type="hidden" name="action" value="payBill">
-  
-  <label for="billFirstName">First Name</label>
-  <input name="firstName" id="billFirstName" placeholder="John" required>
 
   <label for="billLastName">Last Name</label>
   <input name="lastName" id="billLastName" placeholder="Doe" required>
@@ -207,78 +209,6 @@
     <option value="Courtesy Credit">Courtesy Credit</option>
   </select>
   
-<hr style="margin:20px 0;">
-
-<button
-  type="button"
-  id="addFollowUpBtn"
-  style="
-    padding:10px 16px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-  "
->
-  + Add Follow Up
-</button>
-
-<div
-  id="followUpSection"
-  style="
-    display:none;
-  "
->
-
-  <h2 style="margin-top:0;">Follow Up</h2>
-
-  <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap;">
-
-    <div>
-      <label for="followUpAmount">In</label>
-      <input
-        type="number"
-        id="followUpAmount"
-        name="followUpAmount"
-        value="1"
-        min="0"
-        disabled
-        style="width:80px;"
-      >
-    </div>
-
-    <div>
-      <label for="followUpUnit">Unit</label>
-      <select
-        id="followUpUnit"
-        name="followUpUnit"
-        disabled
-      >
-        <option value="days">Day(s)</option>
-        <option value="weeks" selected>Week(s)</option>
-        <option value="months">Month(s)</option>
-      </select>
-    </div>
-
-    <div>
-      <label for="followUpTimes">Repeat</label>
-      <input
-        type="number"
-        id="followUpTimes"
-        name="followUpTimes"
-        value="1"
-        min="0"
-        disabled
-        style="width:80px;"
-      >
-    </div>
-
-    <div style="padding-bottom:8px;">
-      time(s)
-    </div>
-
-  </div>
-
-</div>
 
   <button type="submit">Submit</button>
 </form>
@@ -289,24 +219,8 @@
   <div class="spinner"></div>
 </div>
   
-<script>
-document
-  .getElementById("addFollowUpBtn")
-  .addEventListener("click", function () {
 
-    // show section
-    document.getElementById("followUpSection").style.display = "block";
-
-    // enable fields so they submit
-    document.getElementById("followUpAmount").disabled = false;
-    document.getElementById("followUpUnit").disabled = false;
-    document.getElementById("followUpTimes").disabled = false;
-
-    // hide button
-    this.style.display = "none";
-});
-</script>
-  
+    <!-- loading sign -->
   <script>
   window.addEventListener('DOMContentLoaded', () => {
   const forms = document.querySelectorAll('form');
@@ -327,59 +241,18 @@ document
     }
   });
 });
-  
-  
-  </script>
+      </script>
+    
 <script>
-  const API_KEY = "N&ls4d7C$dRf0N1Di2b&7KfaYW&ah^SBy$WT#!xCbhef1jqkc#zPcKO32HGPLlq$O4%DaXeW4!L8ZZlc!RdEgmCrYMmuMkRIq7i^MB*AONX*d83r31F^7$h9D4QxvpTp"
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRMc0NzxMj3zdUiLNBYQBLKxI80AbBgXVl41NbXZcxwqkNKSnBso49e2prpnqlYJkw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRMc0NzxMj3zdUiLKxI80AbBgXVl41NbXZcxwqkNKSnBso49e2prpnqlYJkw/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
-  document.getElementById("billingForm").action = SCRIPT_URL;
-  document.getElementById("cancelForm").action = SCRIPT_URL;
-  
-  
-document.getElementById("appointmentDate").addEventListener("change", loadTimes);
-document.querySelector("select[name='lengthMinutes']").addEventListener("change", loadTimes);
-
-  
-  
-function loadTimes() {
-  const date = document.getElementById("appointmentDate").value;
-  const length = document.querySelector("select[name='lengthMinutes']").value;
-  
-  document.getElementById("appointmentTime").innerHTML = '<option value="">Select a time</option>';
-  document.getElementById("appointmentTime").disabled = true;
+  document.getElementById("Notes").action = SCRIPT_URL;
+  document.getElementById("Payment").action = SCRIPT_URL;
+   // document.getElementById("Past").action = SCRIPT_URL;
+   // document.getElementById("Daily").action = SCRIPT_URL;
   
  
-
-  if (!date || !length) return;
-
-
-  const url = `${SCRIPT_URL}?action=getTimes&date=${date}&length=${length}&key=${encodeURIComponent(API_KEY)}`;
-  
-  fetch(url)
-    .then(res => res.json())
-    .then(times => {
-      const select = document.getElementById("appointmentTime");
-      select.innerHTML = '<option value="">Select a time</option>';
-      
-        document.getElementById("appointmentTime").disabled = false;
-
-      
-      times.forEach(t => {
-        const opt = document.createElement("option");
-        opt.value = t;
-        opt.textContent = formatTime(t);
-        select.appendChild(opt);
-      });
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Error loading available times");
-    });
-}
-  
   function formatTime(t) {
   const [hour, minute] = t.split(":").map(Number);
 
@@ -406,13 +279,12 @@ function showForm(id) {
   document.getElementById("cancelPhone").addEventListener("blur", loadAppointments);
 
 function loadAppointments() {
-  const firstName = document.getElementById("cancelFirstName").value;
   const lastName = document.getElementById("cancelLastName").value;
   const phone = document.getElementById("cancelPhone").value;
 
-  if (!firstName || !lastName || !phone) return;
+  if (!lastName || !phone) return;
 
-  const url = `${SCRIPT_URL}?action=getAppointments&firstName=${firstName}&lastName=${lastName}&phone=${phone}`;
+  const url = `${SCRIPT_URL}?action=getAppointments&firstName=&lastName=${lastName}&phone=${phone}`;
 
   const select = document.getElementById("appointmentSelect");
   select.innerHTML = '<option>Loading...</option>';
@@ -445,7 +317,7 @@ fetch(url)
   // Omit 'second' to exclude it
 };
         opt.textContent = new Date(appt.dateTime).toLocaleString(undefined, options);
-        opt.dataset.datetime = appt.dateTime; //  THIS is what you're missing
+        opt.dataset.datetime = appt.dateTime; 
         select.appendChild(opt);
       });
 
@@ -461,8 +333,8 @@ function updateHiddenField() {
   const select = document.getElementById("appointmentSelect");
   const selected = select.options[select.selectedIndex];
 
-  document.getElementById("canclAppointmentDate").value =
-    selected?.dataset?.datetime || "";
+  document.getElementById("jobID").value =
+    selected?.value || "";
 }
 
 document.getElementById("appointmentSelect")
