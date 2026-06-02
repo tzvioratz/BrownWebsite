@@ -178,7 +178,7 @@
         
         
 
-      <input type="hidden" id="jobID" name="jobID">
+      
 
   
   <button type="submit" name="action" value="notes">Add Note</button>
@@ -316,8 +316,7 @@ fetch(url)
   minute: 'numeric' 
   // Omit 'second' to exclude it
 };
-        opt.textContent = new Date(appt.dateTime).toLocaleString(undefined, options);
-        opt.dataset.datetime = appt.dateTime; 
+        opt.textContent = appt.label;
         select.appendChild(opt);
       });
 
@@ -331,7 +330,7 @@ fetch(url)
 }
 function updateHiddenField() {
   const select = document.getElementById("appointmentSelect");
-  const selected = select.options[select.selectedIndex];
+  //const selected = select.options[select.selectedIndex];
 
   document.getElementById("jobID").value =
     selected?.value || "";
