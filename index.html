@@ -150,9 +150,8 @@
 
   <label for="extraNotes">Additional Notes</label>
   <textarea name="extraNotes" placeholder="Any extra notes..."></textarea>
-    <input type="hidden" name="action" value="createAppointment">
 
-  <button type="submit">Book Appointment</button>
+  <button type="submit" name="action" value="createAppointment">Book Appointment</button>
 </form>
     
     <form id="Notes" class="tab-form" method="POST" style="display:none;">
@@ -187,8 +186,6 @@
     
 <form id="Payment"  class="tab-form" method="POST" style="display:none;">
   <h2>Record Payment</h2>
-  <input type="hidden" name="action" value="payBill">
-
   <label for="billLastName">Last Name</label>
   <input name="lastName" id="billLastName" placeholder="Doe" required>
 
@@ -210,7 +207,7 @@
   </select>
   
 
-  <button type="submit">Submit</button>
+  <button type="submit" name="action" value="payBill">Submit</button>
 </form>
   </div>
   
