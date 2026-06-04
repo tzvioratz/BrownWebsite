@@ -117,8 +117,7 @@
   <div class="form-wrapper">
 <div class="tabs">
     <button onclick="showForm('bookingForm')">Book an Appointment</button>
-    <button onclick="showForm('Notes')"> Notes / Invoicing</button>
-    <button onclick="showForm('Payment')">Payment Tracking</button>
+    <button onclick="showForm('Notes')">Invoicing / Payments</button>
     <button onclick="showForm('Past')">Search Past Work</button>
     <button onclick="showForm('Daily')">Daily Schedule </button>
 </div>
@@ -189,7 +188,7 @@
     <option value="Courtesy Credit">Courtesy Credit</option>
   </select>
         
-    <label for="paymentAmount">Price</label>
+    <label for="paymentAmount">Amount Paid</label>
   <input type="number" name="paymentAmount" id="paymentAmount" >
       
 
@@ -198,31 +197,26 @@
 <button type="submit" name="action" value="sendInvoice">Record & Send Invoice</button>
 </form>
     
-<form id="Payment"  class="tab-form" method="POST" style="display:none;">
-  <h2>Record Payment</h2>
-  <label for="billLastName">Last Name</label>
-  <input name="lastName" id="billLastName" placeholder="Doe" required>
 
-  <label for="billPhone">Phone</label>
-  <input type="tel" name="phone" id="billPhone" placeholder="123-456-7890" required>
+<form id="Past" class="tab-form" method="POST" style="display:none;">
 
-  <label for="amountPaid">Amount Paid ($)</label>
-  <input type="number" name="amountPaid" id="amountPaid" step="0.01" placeholder="0.00" required>
+  <h2>Search Past Work</h2>
 
-  <label for="paymentMethod">Payment Method</label>
-  <select name="paymentMethod" id="paymentMethod" required>
-    <option value=""></option>
-    <option value="Cash">Cash</option>
-    <option value="Credit Card">Credit Card</option>
-    <option value="Zelle">Zelle</option>
-    <option value="Check">Check</option>
-    <option value="Waive Fee">Waive Fee</option>
-    <option value="Courtesy Credit">Courtesy Credit</option>
+  <label>Last Name</label>
+  <input id="pastLastName">
+
+  <label>Phone</label>
+  <input id="pastPhone">
+
+  <label>Select Job</label>
+  <select id="pastJobSelect">
+    <option value="">Enter info first</option>
   </select>
-  
 
-  <button type="submit" name="action" value="payBill">Submit</button>
+  <div id="jobDetails"></div>
+
 </form>
+      
   </div>
   
 <!-- Add this anywhere in your <body> -->
@@ -254,12 +248,148 @@
 });
       </script>
     
+    
+        <!-- Search work -->
+    <script>
+document.getElementById("pastPhone")
+  .addEventListener("change", loadPastJobs);
+
+document.getElementById("pastLastName")
+  .addEventListener("change", loadPastJobs);
+
+document.getElementById("pastPhone")
+  .addEventListener("keydown", e => {
+    if (e.key === "Enter") loadPastJobs();
+  });
+
+document.getElementById("pastLastName")
+  .addEventListener("keydown", e => {
+    if (e.key === "Enter") loadPastJobs();
+  });
+        
+        function loadPastJobs() {
+
+  const lastName =
+    document.getElementById("pastLastName").value;
+
+  const phone =
+    document.getElementById("pastPhone").value;
+
+  if (!lastName && !phone) return;
+
+  const select =
+    document.getElementById("pastJobSelect");
+
+  select.innerHTML =
+    "<option>Loading...</option>";
+
+  select.disabled = true;
+
+  const url =
+    `${SCRIPT_URL}?action=getJobs&lastName=${encodeURIComponent(lastName)}&phone=${encodeURIComponent(phone)}`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+
+      select.innerHTML =
+        '<option value="">Select Job</option>';
+
+      if (data.length === 0) {
+
+        select.innerHTML =
+          '<option>No jobs found</option>';
+
+        return;
+      }
+
+      let currentStatus = "";
+
+      data.forEach(job => {
+
+        if (job.status !== currentStatus) {
+
+          currentStatus = job.status;
+
+          const group =
+            document.createElement("optgroup");
+
+          group.label = currentStatus;
+
+          select.appendChild(group);
+        }
+
+        const option =
+          document.createElement("option");
+
+        option.value = job.jobID;
+
+        option.textContent = job.label;
+
+        select.lastElementChild.appendChild(option);
+
+      });
+
+      select.disabled = false;
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error loading jobs");
+    });
+}
+        
+       document.getElementById("pastJobSelect")
+  .addEventListener("change", loadJobDetails);
+        
+        function loadJobDetails() {
+
+  const jobID =
+    document.getElementById("pastJobSelect").value;
+
+  if (!jobID) return;
+
+  fetch(
+    `${SCRIPT_URL}?action=getJobDetails&jobID=${jobID}`
+  )
+  .then(res => res.json())
+  .then(job => {
+
+    document.getElementById("jobDetails").innerHTML = `
+      <h3>Job #${job.jobID}</h3>
+
+      <p><b>Customer:</b> ${job.customer}</p>
+
+      <p><b>Machine:</b> ${job.machine}</p>
+
+      <p><b>Status:</b> ${job.status}</p>
+
+      <p><b>Total:</b> $${job.total}</p>
+
+      <hr>
+
+      <h4>Activity</h4>
+
+      ${job.activity.map(a => `
+        <div>
+          ${a.date}<br>
+          ${a.note}<br>
+          ${a.amount || ""}
+        </div>
+        <hr>
+      `).join("")}
+    `;
+  });
+}
+        
+        
+    </script>
+    
+    
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfK2_iedZyGmyfbcRVku0IjuQaws3OIsc7Ywk_BPZF52zGoq65EdSEWpfS5ShDOWde3w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8ljDuaDZ1EAdOyzUEBT2DMnbDoBoIVrHevXO9d5KB0pHmsiJpyKsVp6B_glQHStzFxQ/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
-  document.getElementById("Payment").action = SCRIPT_URL;
    // document.getElementById("Past").action = SCRIPT_URL;
    // document.getElementById("Daily").action = SCRIPT_URL;
   
