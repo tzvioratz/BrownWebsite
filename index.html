@@ -156,32 +156,46 @@
     
     <form id="Notes" class="tab-form" method="POST" style="display:none;">
 
-  <h2>Add Note</h2>
+  <h2>Search Job</h2>
 
   <label>Last Name</label>
-  <input name="lastName" id="cancelLastName" required>
+  <input name="lastName" id="cancelLastName" >
 
   <label>Phone</label>
-  <input name="phone" id="cancelPhone" required>
+  <input name="phone" id="cancelPhone" >
 
   <label>Select Job</label>
   <select name="appointmentId" id="appointmentSelect" required>
     <option value="">Enter info first</option>
   </select>
+    <h2>Add Job Activity</h2>    
+          <label for="extraNotes">Job Activity</label>
+  <textarea name="extraNotes" placeholder="notes..."></textarea>
         
-          <label for="extraNotes">Additional Notes</label>
-  <textarea name="extraNotes" placeholder="Any extra notes..."></textarea>
-        
-         <label>Price</label>
+         <label for="price">Price</label>
   <input type="number" name="price" id="price" >
         
-        
+     <h2>Add Job Payment</h2>   
 
+        <label for="paymentNote">Payment Method</label>
+  <select name="paymentNote" id="paymentNote" required>
+    <option value=""></option>
+    <option value="Cash">Cash</option>
+    <option value="Credit Card">Credit Card</option>
+    <option value="Deposit">Deposit</option>
+    <option value="Zelle">Zelle</option>
+    <option value="Check">Check</option>
+    <option value="Waive Fee">Waive Fee</option>
+    <option value="Courtesy Credit">Courtesy Credit</option>
+  </select>
+        
+    <label for="paymentAmount">Price</label>
+  <input type="number" name="paymentAmount" id="paymentAmount" >
       
 
   
-  <button type="submit" name="action" value="notes">Add Note</button>
-<button type="submit" name="action" value="sendInvoice">Record Note and Send Invoice</button>
+  <button type="submit" name="action" value="notes">Record Activity & Payment</button>
+<button type="submit" name="action" value="sendInvoice">Record & Send Invoice</button>
 </form>
     
 <form id="Payment"  class="tab-form" method="POST" style="display:none;">
@@ -241,7 +255,7 @@
       </script>
     
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwftjIJVV5Nv1iDcdhoA7up4WQAL6iBtP1_xcpVWxO6QYjKnfAyBts_xS1zEAxES1zn_A/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfK2_iedZyGmyfbcRVku0IjuQaws3OIsc7Ywk_BPZF52zGoq65EdSEWpfS5ShDOWde3w/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
@@ -273,13 +287,33 @@ function showForm(id) {
   document.getElementById(id).style.display = "block";
 }
   
-  document.getElementById("cancelPhone").addEventListener("blur", loadAppointments);
+
+// Triggers when the value changes and focus leaves
+ document.getElementById("cancelPhone").addEventListener("change", loadAppointments);
+
+// Triggers when the Enter key is pressed
+ document.getElementById("cancelPhone").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    loadAppointments();
+  }
+});
+    
+
+ document.getElementById("cancelLastName").addEventListener("change", loadAppointments);
+
+
+ document.getElementById("cancelLastName").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    loadAppointments();
+  }
+});
+
 
 function loadAppointments() {
   const lastName = document.getElementById("cancelLastName").value;
   const phone = document.getElementById("cancelPhone").value;
 
-  if (!lastName || !phone) return;
+  if (!lastName && !phone) return;
 
   const url = `${SCRIPT_URL}?action=getAppointments&lastName=${lastName}&phone=${phone}`;
 
