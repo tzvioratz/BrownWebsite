@@ -118,7 +118,7 @@
 <div class="tabs">
     <button onclick="showForm('bookingForm')">Book an Appointment</button>
     <button onclick="showForm('Notes')">Invoicing / Payments</button>
-    <button onclick="showForm('Past')">Search Past Work</button>
+    <button onclick="showForm('Past')">Search Past Jobs</button>
     <button onclick="showForm('Daily')">Daily Schedule </button>
 </div>
 
@@ -322,7 +322,7 @@ document.getElementById("pastLastName")
         const option =
           document.createElement("option");
 
-        option.value = job.jobID;
+        option.value = job.id;
 
         option.textContent = job.label;
 
@@ -341,10 +341,9 @@ document.getElementById("pastLastName")
        document.getElementById("pastJobSelect")
   .addEventListener("change", loadJobDetails);
         
-        function loadJobDetails() {
+function loadJobDetails() {
 
-  const jobID =
-    document.getElementById("pastJobSelect").value;
+  const jobID = document.getElementById("pastJobSelect").value;
 
   if (!jobID) return;
 
@@ -353,25 +352,48 @@ document.getElementById("pastLastName")
   )
   .then(res => res.json())
   .then(job => {
+      
+      const activity = job.activity || [];
+
+let totalBilled = 0;
+let totalNet = 0;
+let totalPaid = 0;
+
+activity.forEach(a => {
+
+  const amt = Number(a.amount) || 0;
+
+  if (amt > 0) {
+    totalBilled += amt;
+  }
+if (amt < 0){
+    totalPaid += amt
+}
+
+  totalNet += amt;
+});
 
     document.getElementById("jobDetails").innerHTML = `
-      <h3>Job #${job.jobID}</h3>
+      <h3>Job #${job.job.jobID}</h3>
 
-      <p><b>Customer:</b> ${job.customer}</p>
+      <p><b>Customer:</b> ${job.job.lastName}</p>
 
-      <p><b>Machine:</b> ${job.machine}</p>
+      <p><b>Machine:</b> ${job.job.machine}</p>
 
-      <p><b>Status:</b> ${job.status}</p>
+      <p><b>Status:</b> ${job.job.status}</p>
 
-      <p><b>Total:</b> $${job.total}</p>
+      <p><b>Total Billed:</b> $${totalBilled}</p>
+      
+      <p><b>Total Paid:</b> $${totalPaid}</p>
+      
+      <p><b>Total Owed:</b> $${totalNet}</p>
 
       <hr>
 
-      <h4>Activity</h4>
+      <h3>Activity</h3>
 
       ${job.activity.map(a => `
         <div>
-          ${a.date}<br>
           ${a.note}<br>
           ${a.amount || ""}
         </div>
@@ -386,7 +408,7 @@ document.getElementById("pastLastName")
     
     
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8ljDuaDZ1EAdOyzUEBT2DMnbDoBoIVrHevXO9d5KB0pHmsiJpyKsVp6B_glQHStzFxQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxT7s3L25DrXZwjgoxX5xoBelFI5RMgLixHCTeA2GY95xAHg_iZ2P8nB-WI0O2UMgE9iw/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
