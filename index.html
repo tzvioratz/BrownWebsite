@@ -252,7 +252,8 @@
 </div>
   
 
-    <!-- loading sign -->
+     <!--
+     loading sign 
   <script>
   window.addEventListener('DOMContentLoaded', () => {
   const forms = document.querySelectorAll('form');
@@ -273,7 +274,49 @@
     }
   });
 });
+    
+    
       </script>
+      -->
+  
+  <script>
+window.addEventListener('DOMContentLoaded', () => {
+  const forms = document.querySelectorAll('form');
+  const loader = document.getElementById('loading-overlay');
+
+  forms.forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault(); // STOP normal form submit
+
+      loader.style.display = 'flex';
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: form.method || 'POST',
+          body: new FormData(form)
+        });
+
+        const result = await response.text();
+
+        alert(result); // Show Apps Script response
+
+      } catch (err) {
+        console.error(err);
+        alert('Submission failed.');
+      } finally {
+        loader.style.display = 'none';
+      }
+    });
+  });
+
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      loader.style.display = 'none';
+    }
+  });
+});
+</script>
     
     
         <!-- Search work -->
@@ -547,3 +590,4 @@ function formatDateTime(date, time) {
   
   
 </html>
+
