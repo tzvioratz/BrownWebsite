@@ -214,6 +214,27 @@
   
 <button type="submit" name="action" value="notes">Record Activity & Payment</button>
 <button type="submit" name="action" value="closeJob">Record  & Close Job</button>
+
+        <h2>Record and Invoice</h2>   
+        
+          <label for="email">Email</label>
+  <input name="email" type="email" placeholder="email@example.com" >
+        
+        <label for="tax">Tax Amount</label>
+    <select name="tax" id="tax" >
+        <option value=""></option>
+        <option value="8">8%</option>
+        <option value="8.754">8.754%</option>
+        <option value="0">😜</option>
+    </select>
+        
+         <label for="cc">Credit Card Fee?</label>
+  <select name="cc" id="cc" >
+    <option value=""></option>
+    <option value="3.9">Yes</option>
+    <option value="0">No</option>
+  </select>
+        
 <button type="submit" name="action" value="sendInvoice">Record & Send Invoice</button>
 </form>
     
