@@ -279,7 +279,7 @@
       </script>
       -->
   
-  <script>
+<!--  <script>
 window.addEventListener('DOMContentLoaded', () => {
   const forms = document.querySelectorAll('form');
   const loader = document.getElementById('loading-overlay');
@@ -315,6 +315,71 @@ window.addEventListener('DOMContentLoaded', () => {
       loader.style.display = 'none';
     }
   });
+});
+</script>-->
+    
+    <script>
+window.addEventListener('DOMContentLoaded', () => {
+
+
+  const forms = document.querySelectorAll('form');
+  const loader = document.getElementById('loading-overlay');
+
+  forms.forEach((form) => {
+
+    let clickedButton = null;
+
+    // Remember which submit button was clicked
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        clickedButton = btn;
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+      loader.style.display = 'flex';
+
+      try {
+
+        const formData = new FormData(form);
+
+        // Include the clicked submit button
+        if (clickedButton) {
+          formData.append(clickedButton.name, clickedButton.value);
+        }
+
+        const response = await fetch(SCRIPT_URL, {
+          method: form.method || 'POST',
+          body: formData
+        });
+
+        const result = await response.text();
+
+        alert(result);
+
+      } catch (err) {
+
+        console.error(err);
+        alert('Submission failed.');
+
+      } finally {
+
+        loader.style.display = 'none';
+        clickedButton = null;
+
+      }
+    });
+  });
+
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      loader.style.display = 'none';
+    }
+  });
+
 });
 </script>
     
