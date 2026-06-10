@@ -359,6 +359,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const result = await response.text();
 
         alert(result);
+        forms.forEach(f => f.reset());
 
       } catch (err) {
 
