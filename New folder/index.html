@@ -470,7 +470,7 @@ document.getElementById("pastLastName")
   select.disabled = true;
 
   const url =
-    `${SCRIPT_URL}?action=getJobs&lastName=${encodeURIComponent(lastName)}&phone=${encodeURIComponent(phone)}`;
+    `${SCRIPT_URL}?action=getJobs&lastName=${encodeURIComponent(lastName)}&phone=${encodeURIComponent(phone)}&password=${sessionStorage.getItem("auth")}`;
 
   fetch(url)
     .then(res => res.json())
@@ -540,7 +540,7 @@ function loadJobDetails() {
       const activity = job.activity || [];
 
 let totalBilled = 0;
-let totalNet = 0;
+let totalOwed = 0;
 let totalPaid = 0;
 
 activity.forEach(a => {
@@ -554,8 +554,10 @@ if (amt < 0){
     totalPaid += amt
 }
 
-  totalNet += amt;
+  totalOwed += amt;
 });
+    
+    
 
     document.getElementById("jobDetails").innerHTML = `
       <h3>Job #${job.job.jobID}</h3>
@@ -570,7 +572,7 @@ if (amt < 0){
       
       <p><b>Total Paid:</b> $${totalPaid}</p>
       
-      <p><b>Total Owed:</b> $${totalNet}</p>
+      <p><b>Total Owed:</b> $${totalOwed}</p>
 
       <hr>
 
@@ -653,7 +655,7 @@ function loadAppointments() {
 
   if (!lastName && !phone) return;
 
-  const url = `${SCRIPT_URL}?action=getAppointments&lastName=${lastName}&phone=${phone}`;
+  const url = `${SCRIPT_URL}?action=getAppointments&lastName=${lastName}&phone=${phone}&password=${sessionStorage.getItem("auth")}`;
 
   const select = document.getElementById("appointmentSelect");
   select.innerHTML = '<option>Loading...</option>';
