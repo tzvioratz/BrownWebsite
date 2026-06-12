@@ -560,6 +560,8 @@ if (amt < 0){
     
 
     document.getElementById("jobDetails").innerHTML = `
+      <button onclick="">Add Payment</button>
+      <button onclick="">Add Charge</button>
       <h3>Job #${job.job.jobID}</h3>
 
       <p><b>Customer:</b> ${job.job.lastName}</p>
@@ -595,7 +597,7 @@ if (amt < 0){
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHfEhyPcCyfaAFvNn_sJ8FknzGXqhDd_lF0v13CpRIbh1vxQuzizbug59ZMHHas_n3/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwakvDYW4Lk7moCzmyj1iNZT7tDN7atFjP70NOwaIF7f1EpLmuXgcl5gCVboWuVHFV6LA/exec";
 
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
