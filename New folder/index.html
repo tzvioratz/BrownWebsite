@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Book an Appointment</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    display: flex;
+    justify-content: center;
+    align-items: flex_start;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  form {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+    width: 350px;
+  }
+
+  h2 {
+    text-align: center;
+    color: #333333;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #333333;
+  }
+
+  input, textarea, button, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  button {
+    background-color: #4da6ff;
+    color: white;
+    font-weight: bold;
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #3399ff;
+  }
+  .tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+
+}
+
+.tabs button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.form-wrapper {
+  display: flex;
+  flex-direction: column; /* 👈 forces vertical stacking */
+  align-items: center;
+}
+  
+  
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  /* We use flex to center, but JS will toggle 'none' vs 'flex' */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+</style>
+</head>
+<body>
+  
+  <div id="loginForm">
+  <h3>Login</h3>
+  <input type="password" id="password" placeholder="Enter password" required />
+  <button id=loginButton>Login</button>
+</div>
+
+<div id="app" style="display:none;">
+  
+   <div class="form-wrapper">
+<div class="tabs">
+    <button onclick="showForm('bookingForm')">Book an Appointment</button>
+    <button onclick="showForm('Notes')">Invoicing / Payments</button>
+    <button onclick="showForm('Past')">Search Past Jobs</button>
+    <button onclick="window.open('https://docs.google.com/spreadsheets/d/1KjTc2ER-24N4VdubA1EFODfUvFwsVbiFSWWvZY0ap8U/edit?', '_blank');">Open Billing <br> Dashboard</button>
+
+</div>
+
+<form  id="bookingForm" class="tab-form" method="POST">
+  <h2>Book an Appointment</h2>
+    
+    <label for="phone">Phone*</label>
+  <input type="tel" name="phone" placeholder="123-456-7890" required>
+
+    <label for="address">Address*</label>
+  <input type="text" name="address" placeholder="123 Make Belive Dr, Brooklyn NY 11210" required>
+    
+        <label for="location">Location*</label>
+    <select name="location" id="location" required>
+        <option value=""></option>
+    <option value="Woodridge">Woodridge</option>
+    <option value="South Fallsburg">South Fallsburg</option>
+    <option value="Fallsburg">Fallsburg</option>
+    <option value="Loch sheldrake">Loch sheldrake</option>
+    <option value="Monticello">Monticello</option>
+    <option value="Woodbourne">Woodbourne</option>
+    <option value="Ellenville">Ellenville</option>
+    <option value="Kiamesha">Kiamesha</option>
+    <option value="Swan Lake">Swan Lake</option>
+        <option value="Liberty">Liberty</option>
+        <option value="White Lake">White Lake</option>
+        <option value="other">Other</option>
+    </select>
+    
+        <label for="date">Date*</label>
+    <input type="date" name="date" id="date" required>
+    
+      <label for="machine">Machine</label>
+  <input name="machine" type="text" >
+  
+    <label for="machine">Brand</label>
+  <input name="brand" type="text" >
+    
+  <label for="lastName">Last Name</label>
+  <input name="lastName" placeholder="Doe" >
+
+  <label for="email">Email</label>
+  <input name="email" type="email" placeholder="email@example.com" >
+
+
+  <label for="extraNotes">Additional Notes</label>
+  <textarea name="extraNotes" placeholder="Any extra notes..."></textarea>
+
+  <button type="submit" name="action" value="createAppointment">Book Appointment</button>
+</form>
+    
+    <form id="Notes" class="tab-form" method="POST" style="display:none;">
+
+  <h2>Search Job</h2>
+
+  <label>Last Name</label>
+  <input name="lastName" id="cancelLastName" >
+
+  <label>Phone</label>
+  <input name="phone" id="cancelPhone" >
+
+  <label>Select Job</label>
+  <select name="appointmentId" id="appointmentSelect" required>
+    <option value="">Enter info first</option>
+  </select>
+    <h2>Add Job Activity</h2>    
+          <label for="extraNotes">Job Activity</label>
+  <textarea name="extraNotes" placeholder="notes..."></textarea>
+        
+         <label for="price">Price</label>
+  <input type="number" name="price" id="price" >
+        
+     <h2>Add Job Payment</h2>   
+
+        <label for="paymentNote">Payment Method</label>
+  <select name="paymentNote" id="paymentNote" >
+    <option value=""></option>
+    <option value="Payment - Cash">Cash</option>
+    <option value="Payment - Credit Card">Credit Card</option>
+    <option value="Payment - Deposit">Deposit</option>
+    <option value="Payment - Zelle">Zelle</option>
+    <option value="Payment - Check">Check</option>
+  </select>
+        
+    <label for="paymentAmount">Amount Paid</label>
+  <input type="number" name="paymentAmount" id="paymentAmount" >
+      
+
+  
+<button type="submit" name="action" value="notes">Record Activity & Payment</button>
+<button type="submit" name="action" value="closeJob">Record  & Close Job</button>
+
+        <h2>Record and Invoice</h2>   
+        
+          <label for="email">Email</label>
+  <input name="email" type="email" placeholder="email@example.com" >
+        
+        <label for="tax">Tax Amount</label>
+    <select name="tax" id="tax" >
+        <option value=""></option>
+        <option value="8">8%</option>
+        <option value="8.875">8.875%</option>
+        <option value="0">😜</option>
+    </select>
+        
+         <label for="cc">Credit Card Fee?</label>
+  <select name="cc" id="cc" >
+    <option value=""></option>
+    <option value="4">Yes</option>
+    <option value="0">No</option>
+  </select>
+        
+<button type="submit" name="action" value="sendInvoice">Record & Send Invoice</button>
+</form>
+    
+
+<form id="Past" class="tab-form" method="POST" style="display:none;">
+
+  <h2>Search Past Work</h2>
+
+  <label>Last Name</label>
+  <input id="pastLastName">
+
+  <label>Phone</label>
+  <input id="pastPhone">
+
+  <label>Select Job</label>
+  <select id="pastJobSelect">
+    <option value="">Enter info first</option>
+  </select>
+
+  <div id="jobDetails"></div>
+
+</form>
+      
+  </div>
+  
+<!-- Add this anywhere in your <body> -->
+<div id="loading-overlay" style="display: none;">
+  <div class="spinner"></div>
+</div>
+  
+  
+</div>
+  
+  
+<!-- Tabs -->
+ 
+
+     <!--
+     loading sign 
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+  const forms = document.querySelectorAll('form');
+  const loader = document.getElementById('loading-overlay');
+
+  forms.forEach((form) => {
+    form.addEventListener('submit', () => {
+      // Force the display to flex
+      loader.style.display = 'flex';
+      console.log("Form submitted, loader should show.");
+    });
+  });
+
+  // Fix for the 'Back' button
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      loader.style.display = 'none';
+    }
+  });
+});
+    
+    
+      </script>
+      -->
+  
+<!--  <script>
+window.addEventListener('DOMContentLoaded', () => {
+  const forms = document.querySelectorAll('form');
+  const loader = document.getElementById('loading-overlay');
+
+  forms.forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault(); // STOP normal form submit
+
+      loader.style.display = 'flex';
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: form.method || 'POST',
+          body: new FormData(form)
+        });
+
+        const result = await response.text();
+
+        alert(result); // Show Apps Script response
+
+      } catch (err) {
+        console.error(err);
+        alert('Submission failed.');
+      } finally {
+        loader.style.display = 'none';
+      }
+    });
+  });
+
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      loader.style.display = 'none';
+    }
+  });
+});
+</script>-->
+    <script>
+document.getElementById("loginButton").addEventListener("click", () => {
+  const password = document.getElementById("password").value;
+
+  sessionStorage.setItem("auth", password);
+
+  document.getElementById("loginForm").style.display = "none";
+  document.getElementById("app").style.display = "block";
+});
+      document.getElementById("password").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const password = document.getElementById("password").value;
+
+  sessionStorage.setItem("auth", password);
+
+  document.getElementById("loginForm").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  }
+});
+      
+  
+  </script>
+    <script>
+window.addEventListener('DOMContentLoaded', () => {
+
+
+  const forms = document.querySelectorAll('form');
+  const loader = document.getElementById('loading-overlay');
+
+  forms.forEach((form) => {
+
+    let clickedButton = null;
+
+    // Remember which submit button was clicked
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        clickedButton = btn;
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+      loader.style.display = 'flex';
+
+      try {
+
+        const formData = new FormData(form);
+
+        // Include the clicked submit button
+        if (clickedButton) {
+          formData.append(clickedButton.name, clickedButton.value);
+        }
+        
+        formData.append("password",sessionStorage.getItem("auth"));
+
+        const response = await fetch(SCRIPT_URL, {
+          method: form.method || 'POST',
+          body: formData
+        });
+
+        const result = await response.text();
+
+        alert(result);
+        forms.forEach(f => f.reset());
+
+      } catch (err) {
+
+        console.error(err);
+        alert('Submission failed.');
+
+      } finally {
+
+        loader.style.display = 'none';
+        clickedButton = null;
+
+      }
+    });
+  });
+
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      loader.style.display = 'none';
+    }
+  });
+
+});
+</script>
+    
+    
+        <!-- Search work -->
+    <script>
+document.getElementById("pastPhone")
+  .addEventListener("change", loadPastJobs);
+
+document.getElementById("pastLastName")
+  .addEventListener("change", loadPastJobs);
+
+document.getElementById("pastPhone")
+  .addEventListener("keydown", e => {
+    if (e.key === "Enter") loadPastJobs();
+  });
+
+document.getElementById("pastLastName")
+  .addEventListener("keydown", e => {
+    if (e.key === "Enter") loadPastJobs();
+  });
+        
+        function loadPastJobs() {
+
+  const lastName =
+    document.getElementById("pastLastName").value;
+
+  const phone =
+    document.getElementById("pastPhone").value;
+
+  if (!lastName && !phone) return;
+
+  const select =
+    document.getElementById("pastJobSelect");
+
+  select.innerHTML =
+    "<option>Loading...</option>";
+
+  select.disabled = true;
+
+  const url =
+    `${SCRIPT_URL}?action=getJobs&lastName=${encodeURIComponent(lastName)}&phone=${encodeURIComponent(phone)}`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+
+      select.innerHTML =
+        '<option value="">Select Job</option>';
+
+      if (data.length === 0) {
+
+        select.innerHTML =
+          '<option>No jobs found</option>';
+
+        return;
+      }
+
+      let currentStatus = "";
+
+      data.forEach(job => {
+
+        if (job.status !== currentStatus) {
+
+          currentStatus = job.status;
+
+          const group =
+            document.createElement("optgroup");
+
+          group.label = currentStatus;
+
+          select.appendChild(group);
+        }
+
+        const option =
+          document.createElement("option");
+
+        option.value = job.id;
+
+        option.textContent = job.label;
+
+        select.lastElementChild.appendChild(option);
+
+      });
+
+      select.disabled = false;
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error loading jobs");
+    });
+}
+        
+       document.getElementById("pastJobSelect")
+  .addEventListener("change", loadJobDetails);
+        
+function loadJobDetails() {
+
+  const jobID = document.getElementById("pastJobSelect").value;
+
+  if (!jobID) return;
+
+  fetch(
+    `${SCRIPT_URL}?action=getJobDetails&jobID=${jobID}`
+  )
+  .then(res => res.json())
+  .then(job => {
+      
+      const activity = job.activity || [];
+
+let totalBilled = 0;
+let totalNet = 0;
+let totalPaid = 0;
+
+activity.forEach(a => {
+
+  const amt = Number(a.amount) || 0;
+
+  if (amt > 0) {
+    totalBilled += amt;
+  }
+if (amt < 0){
+    totalPaid += amt
+}
+
+  totalNet += amt;
+});
+
+    document.getElementById("jobDetails").innerHTML = `
+      <h3>Job #${job.job.jobID}</h3>
+
+      <p><b>Customer:</b> ${job.job.lastName}</p>
+
+      <p><b>Machine:</b> ${job.job.machine}</p>
+
+      <p><b>Status:</b> ${job.job.status}</p>
+
+      <p><b>Total Billed:</b> $${totalBilled}</p>
+      
+      <p><b>Total Paid:</b> $${totalPaid}</p>
+      
+      <p><b>Total Owed:</b> $${totalNet}</p>
+
+      <hr>
+
+      <h3>Activity</h3>
+
+      ${job.activity.map(a => `
+        <div>
+          ${a.note}<br>
+          ${a.amount || ""}
+        </div>
+        <hr>
+      `).join("")}
+    `;
+  });
+}
+        
+        
+    </script>
+    
+    
+<script>
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHfEhyPcCyfaAFvNn_sJ8FknzGXqhDd_lF0v13CpRIbh1vxQuzizbug59ZMHHas_n3/exec";
+
+
+  document.getElementById("bookingForm").action = SCRIPT_URL;
+  document.getElementById("Notes").action = SCRIPT_URL;
+   // document.getElementById("Past").action = SCRIPT_URL;
+   // document.getElementById("Daily").action = SCRIPT_URL;
+  
+ 
+  function formatTime(t) {
+  const [hour, minute] = t.split(":").map(Number);
+
+  let suffix = "AM";
+  let displayHour = hour;
+
+  if (hour >= 12) {
+    suffix = "PM";
+    if (hour > 12) displayHour = hour - 12;
+  }
+
+  if (hour === 0) displayHour = 12;
+
+  return `${displayHour}:${minute.toString().padStart(2, "0")} ${suffix}`;
+}
+  
+function showForm(id) {
+  document.querySelectorAll(".tab-form")
+    .forEach(f => f.style.display = "none");
+
+  document.getElementById(id).style.display = "block";
+}
+  
+
+// Triggers when the value changes and focus leaves
+ document.getElementById("cancelPhone").addEventListener("change", loadAppointments);
+
+// Triggers when the Enter key is pressed
+ document.getElementById("cancelPhone").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    loadAppointments();
+  }
+});
+    
+
+ document.getElementById("cancelLastName").addEventListener("change", loadAppointments);
+
+
+ document.getElementById("cancelLastName").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    loadAppointments();
+  }
+});
+
+
+function loadAppointments() {
+  const lastName = document.getElementById("cancelLastName").value;
+  const phone = document.getElementById("cancelPhone").value;
+
+  if (!lastName && !phone) return;
+
+  const url = `${SCRIPT_URL}?action=getAppointments&lastName=${lastName}&phone=${phone}`;
+
+  const select = document.getElementById("appointmentSelect");
+  select.innerHTML = '<option>Loading...</option>';
+  select.disabled = true;
+  
+fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      select.innerHTML = '<option value="">Select appointment</option>';
+
+      if (data.length === 0) {
+        select.innerHTML = '<option>No upcoming appointments</option>';
+        return;
+      }
+
+      data.forEach(appt => {
+        const opt = document.createElement("option");
+
+        // value should be unique ID (IMPORTANT)
+        opt.value = appt.id;
+        opt.textContent = appt.label;
+        select.appendChild(opt);
+      });
+
+      select.disabled = false;
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error loading appointments");
+    });
+  
+}
+function updateHiddenField() {
+  const select = document.getElementById("appointmentSelect");
+  //const selected = select.options[select.selectedIndex];
+
+  document.getElementById("jobID").value =
+    selected?.value || "";
+}
+
+document.getElementById("appointmentSelect")
+  .addEventListener("change", updateHiddenField);
+
+function formatDateTime(date, time) {
+  return `${date} at ${formatTime(time)}`;
+}
+</script>
+
+</body>
+  
+  
+</html>
+
