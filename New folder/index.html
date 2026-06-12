@@ -532,7 +532,7 @@ function loadJobDetails() {
   if (!jobID) return;
 
   fetch(
-    `${SCRIPT_URL}?action=getJobDetails&jobID=${jobID}`
+    `${SCRIPT_URL}?action=getJobDetails&jobID=${jobID}&password=${sessionStorage.getItem("auth")}`
   )
   .then(res => res.json())
   .then(job => {
