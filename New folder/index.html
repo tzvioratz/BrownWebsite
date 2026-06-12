@@ -562,6 +562,7 @@ if (amt < 0){
     document.getElementById("jobDetails").innerHTML = `
       <button onclick="">Add Payment</button>
       <button onclick="">Add Charge</button>
+      <button onclick="">Send Invoice</button>
       <h3>Job #${job.job.jobID}</h3>
 
       <p><b>Customer:</b> ${job.job.lastName}</p>
@@ -584,6 +585,7 @@ if (amt < 0){
         <div>
           ${a.note}<br>
           ${a.amount || ""}
+          <button onclick="deleteActivity('${job.job.jobID}', '${a.date}')"> Delete </button>
         </div>
         <hr>
       `).join("")}
@@ -597,8 +599,7 @@ if (amt < 0){
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwakvDYW4Lk7moCzmyj1iNZT7tDN7atFjP70NOwaIF7f1EpLmuXgcl5gCVboWuVHFV6LA/exec";
-
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_WkdnF5mHHJlcEdc6JgVlm1w-XSY7cR-qx3WDk4f4znwX21anOyClqCTV65U8f8mO/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
