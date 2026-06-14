@@ -524,6 +524,10 @@ document.getElementById("pastLastName")
         
        document.getElementById("pastJobSelect")
   .addEventListener("change", loadJobDetails);
+      
+let totalBilled = 0;
+let totalOwed = 0;
+let totalPaid = 0;
         
 function loadJobDetails() {
 
@@ -539,9 +543,9 @@ function loadJobDetails() {
       
       const activity = job.activity || [];
 
-let totalBilled = 0;
-let totalOwed = 0;
-let totalPaid = 0;
+ totalBilled = 0;
+ totalOwed = 0;
+ totalPaid = 0;
 
 activity.forEach(a => {
 
@@ -556,13 +560,29 @@ if (amt < 0){
 
   totalOwed += amt;
 });
-    
-    
+
 
     document.getElementById("jobDetails").innerHTML = `
-      <button onclick="">Add Payment</button>
-      <button onclick="">Add Charge</button>
+      <button onclick="">Add Charge/Payment</button>
+      <button onclick="">Close Job</button>
       <button onclick="">Send Invoice</button>
+      
+              <label >Tax Amount</label>
+    <select name="tax"  id="tax" onchange="setTax(this.value)">
+        <option value="0"> </option>
+        <option value="8">8%</option>
+        <option value="8.875">8.875%</option>
+        
+    </select>
+        
+         <label >Credit Card Fee?</label>
+  <select name="cc"  id="cc" onchange="setCC(this.value)">
+    <option value=""></option>
+    <option value="4">Yes</option>
+    <option value="0">No</option>
+  </select>
+      
+      
       <h3>Job #${job.job.jobID}</h3>
 
       <p><b>Customer:</b> ${job.job.lastName}</p>
@@ -570,30 +590,94 @@ if (amt < 0){
       <p><b>Machine:</b> ${job.job.machine}</p>
 
       <p><b>Status:</b> ${job.job.status}</p>
+      
+      <hr>
 
-      <p><b>Total Billed:</b> $${totalBilled}</p>
+      <p id="ttlBilled"><b>Total:</b> $${totalBilled}</p>
       
-      <p><b>Total Paid:</b> $${totalPaid}</p>
+      <p><b>Paid:</b> $${totalPaid}</p>
       
-      <p><b>Total Owed:</b> $${totalOwed}</p>
+      <p id="balance"><b>Balance:</b> $${totalOwed}</p>
 
       <hr>
 
       <h3>Activity</h3>
 
       ${job.activity.map(a => `
-        <div>
-          ${a.note}<br>
-          ${a.amount || ""}
-          <button onclick="deleteActivity('${job.job.jobID}', '${a.date}')"> Delete </button>
-        </div>
+<div style="display:flex;  justify-content:space-between;  align-items:center; margin:5px 0;">
+    
+    <div>
+      ${a.note}<br>
+      $${a.amount || ""}
+    </div>
+
+    <button 
+      class="delete-activity"
+      data-jobid="${job.job.jobID}"
+      data-date="${a.date}"
+      style="
+          display:flex;
+      justify-content:center;
+      align-items:center;
+
+      border:1px solid #ddd;
+      border-radius:4px;
+      background:#fff;
+      cursor:pointer;
+
+      font-size:30px;
+      width:50px;
+      height:50px;
+
+      padding:0;
+      line-height:1;
+      flex-shrink:0;
+      
+      ">
+      🗑️
+    </button>
+
+  </div>
         <hr>
       `).join("")}
     `;
+
+    
   });
 }
-        
-        
+      
+      let selectedTax = 0;
+let selectedCC = 0;
+      
+      function setTax(val) {
+  selectedTax = parseFloat(val) / 100 || 0;
+  editPriceStuff();
+}
+      
+      function setCC(val) {
+  selectedCC = parseFloat(val) / 100 || 0;
+  editPriceStuff();
+}
+      
+function editPriceStuff(){
+    console.log("editPriceStuff fired");
+
+        console.log({totalBilled, totalPaid, selectedTax, selectedCC});
+
+  
+  let newOwed =  ((totalBilled * (1 + selectedTax) + totalPaid) * (1 + selectedCC)).toFixed(2);
+  let newBilled= (totalBilled * (1 + selectedTax) * (1 + selectedTax)).toFixed(2);
+
+     
+
+  
+  document.getElementById("ttlBilled").innerHTML = `<b>Total:</b> $${newBilled}`;
+  document.getElementById("balance").innerHTML = `<b>Balance:</b> $${newOwed}`;
+  
+
+  
+}     
+ 
     </script>
     
     
