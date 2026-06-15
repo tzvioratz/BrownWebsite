@@ -113,13 +113,21 @@
 </style>
 </head>
 <body>
-<!-- Tabs -->
-  <div class="form-wrapper">
+  
+  <div id="loginForm">
+  <h3>Login</h3>
+  <input type="password" id="password" placeholder="Enter password" required />
+  <button id=loginButton>Login</button>
+</div>
+
+<div id="app" style="display:none;">
+  
+   <div class="form-wrapper">
 <div class="tabs">
     <button onclick="showForm('bookingForm')">Book an Appointment</button>
     <button onclick="showForm('Notes')">Invoicing / Payments</button>
     <button onclick="showForm('Past')">Search Past Jobs</button>
-    <button onclick="window.open('https://docs.google.com/spreadsheets/d/18NOzQcyEB4T1PqhY-XA0iT56Efozgc7FAptysl6UHhg/edit?usp=sharing', '_blank');">Open Billing <br> Dashboard</button>
+    <button onclick="window.open('https://docs.google.com/spreadsheets/d/1KjTc2ER-24N4VdubA1EFODfUvFwsVbiFSWWvZY0ap8U/edit?', '_blank');">Open Billing <br> Dashboard</button>
 
 </div>
 
@@ -127,7 +135,7 @@
   <h2>Book an Appointment</h2>
     
     <label for="phone">Phone*</label>
-  <input type="tel" name="phone" placeholder="123-456-7890" required>
+  <input type="text" name="phone" placeholder="123-456-7890" required>
 
     <label for="address">Address*</label>
   <input type="text" name="address" placeholder="123 Make Belive Dr, Brooklyn NY 11210" required>
@@ -240,8 +248,7 @@
 
   <h2>Search Past Work</h2>
 
-  <label>Last Name</label>
-  <input id="pastLastName">
+
 
   <label>Phone</label>
   <input id="pastPhone">
@@ -262,73 +269,33 @@
   <div class="spinner"></div>
 </div>
   
-
-     <!--
-     loading sign 
-  <script>
-  window.addEventListener('DOMContentLoaded', () => {
-  const forms = document.querySelectorAll('form');
-  const loader = document.getElementById('loading-overlay');
-
-  forms.forEach((form) => {
-    form.addEventListener('submit', () => {
-      // Force the display to flex
-      loader.style.display = 'flex';
-      console.log("Form submitted, loader should show.");
-    });
-  });
-
-  // Fix for the 'Back' button
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      loader.style.display = 'none';
-    }
-  });
-});
-    
-    
-      </script>
-      -->
   
-<!--  <script>
-window.addEventListener('DOMContentLoaded', () => {
-  const forms = document.querySelectorAll('form');
-  const loader = document.getElementById('loading-overlay');
+</div>
+  
+  
 
-  forms.forEach((form) => {
-    form.addEventListener('submit', async (e) => {
+    <script>
+document.getElementById("loginButton").addEventListener("click", () => {
+  const password = document.getElementById("password").value;
 
-      e.preventDefault(); // STOP normal form submit
+  sessionStorage.setItem("auth", password);
 
-      loader.style.display = 'flex';
-
-      try {
-        const response = await fetch(SCRIPT_URL, {
-          method: form.method || 'POST',
-          body: new FormData(form)
-        });
-
-        const result = await response.text();
-
-        alert(result); // Show Apps Script response
-
-      } catch (err) {
-        console.error(err);
-        alert('Submission failed.');
-      } finally {
-        loader.style.display = 'none';
-      }
-    });
-  });
-
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      loader.style.display = 'none';
-    }
-  });
+  document.getElementById("loginForm").style.display = "none";
+  document.getElementById("app").style.display = "block";
 });
-</script>-->
-    
+      document.getElementById("password").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const password = document.getElementById("password").value;
+
+  sessionStorage.setItem("auth", password);
+
+  document.getElementById("loginForm").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  }
+});
+      
+  
+  </script>
     <script>
 window.addEventListener('DOMContentLoaded', () => {
 
@@ -361,6 +328,8 @@ window.addEventListener('DOMContentLoaded', () => {
         if (clickedButton) {
           formData.append(clickedButton.name, clickedButton.value);
         }
+        
+        formData.append("password",sessionStorage.getItem("auth"));
 
         const response = await fetch(SCRIPT_URL, {
           method: form.method || 'POST',
@@ -401,28 +370,22 @@ window.addEventListener('DOMContentLoaded', () => {
 document.getElementById("pastPhone")
   .addEventListener("change", loadPastJobs);
 
-document.getElementById("pastLastName")
-  .addEventListener("change", loadPastJobs);
 
 document.getElementById("pastPhone")
   .addEventListener("keydown", e => {
     if (e.key === "Enter") loadPastJobs();
   });
 
-document.getElementById("pastLastName")
-  .addEventListener("keydown", e => {
-    if (e.key === "Enter") loadPastJobs();
-  });
+
         
         function loadPastJobs() {
 
-  const lastName =
-    document.getElementById("pastLastName").value;
+
 
   const phone =
     document.getElementById("pastPhone").value;
 
-  if (!lastName && !phone) return;
+  if (!phone) return;
 
   const select =
     document.getElementById("pastJobSelect");
@@ -433,7 +396,7 @@ document.getElementById("pastLastName")
   select.disabled = true;
 
   const url =
-    `${SCRIPT_URL}?action=getJobs&lastName=${encodeURIComponent(lastName)}&phone=${encodeURIComponent(phone)}`;
+    `${SCRIPT_URL}?action=getJobs&phone=${encodeURIComponent(phone)}&password=${sessionStorage.getItem("auth")}`;
 
   fetch(url)
     .then(res => res.json())
@@ -487,6 +450,10 @@ document.getElementById("pastLastName")
         
        document.getElementById("pastJobSelect")
   .addEventListener("change", loadJobDetails);
+      
+let totalBilled = 0;
+let totalOwed = 0;
+let totalPaid = 0;
         
 function loadJobDetails() {
 
@@ -495,16 +462,16 @@ function loadJobDetails() {
   if (!jobID) return;
 
   fetch(
-    `${SCRIPT_URL}?action=getJobDetails&jobID=${jobID}`
+    `${SCRIPT_URL}?action=getJobDetails&jobID=${jobID}&password=${sessionStorage.getItem("auth")}`
   )
   .then(res => res.json())
   .then(job => {
       
       const activity = job.activity || [];
 
-let totalBilled = 0;
-let totalNet = 0;
-let totalPaid = 0;
+ totalBilled = 0;
+ totalOwed = 0;
+ totalPaid = 0;
 
 activity.forEach(a => {
 
@@ -517,47 +484,155 @@ if (amt < 0){
     totalPaid += amt
 }
 
-  totalNet += amt;
+  totalOwed += amt;
 });
 
-    document.getElementById("jobDetails").innerHTML = `
-      <h3>Job #${job.job.jobID}</h3>
+    let taxAmount = (job.job.tax + 1) * totalBilled;
+    let ccFee = (totalBilled + totalPaid) * (1 + job.job.cc);
 
+    document.getElementById("jobDetails").innerHTML = `
+    <label >Tax Amount</label>
+    <select name="tax"  id="tax" onchange="setTax(this.value)">
+        <option value="0"> </option>
+        <option value="8">8%</option>
+        <option value="8.875">8.875%</option>
+        
+    </select>
+        
+         <label >Credit Card Fee?</label>
+  <select name="cc"  id="cc" onchange="setCC(this.value)">
+    <option value=""></option>
+    <option value="4">Yes</option>
+    <option value="0">No</option>
+  </select>
+  
+  <button onclick="">Close Job and Add Fees</button>
+  <button onclick="">Send Invoice</button>    
+      
+      <h3>Job #${job.job.jobID}</h3>
+      
       <p><b>Customer:</b> ${job.job.lastName}</p>
 
       <p><b>Machine:</b> ${job.job.machine}</p>
 
       <p><b>Status:</b> ${job.job.status}</p>
+      
+      <hr>
+      
+      <h3>Payments</h3>
 
-      <p><b>Total Billed:</b> $${totalBilled}</p>
+      <p id="ttlBilled"><b>Subtotal:</b> $${totalBilled}</p>
       
-      <p><b>Total Paid:</b> $${totalPaid}</p>
+      <p><b>Paid:</b> $${totalPaid}</p>
       
-      <p><b>Total Owed:</b> $${totalNet}</p>
+      <p id="balance"><b>Balance:</b> $${totalOwed}</p>
 
       <hr>
 
       <h3>Activity</h3>
 
       ${job.activity.map(a => `
-        <div>
-          ${a.note}<br>
-          ${a.amount || ""}
-        </div>
+<div style="display:flex;  justify-content:space-between;  align-items:center; margin:5px 0;">
+    
+    <div>
+      ${a.note}<br>
+      $${a.amount || ""}
+    </div>
+
+    <button type="button" onclick="deleteActivity('${a.id}')"
+        style="
+          display:flex;
+      justify-content:center;
+      align-items:center;
+
+      border:1px solid #ddd;
+      border-radius:4px;
+      background:#fff;
+      cursor:pointer;
+
+      font-size:30px;
+      width:50px;
+      height:50px;
+
+      padding:0;
+      line-height:1;
+      flex-shrink:0;
+      
+      ">
+      🗑️
+    </button>
+
+  </div>
+ 
         <hr>
       `).join("")}
+       <button onclick="">Add Charge/Payment</button>
     `;
+
+    
   });
 }
-        
-        
+      
+      let selectedTax = 0;
+let selectedCC = 0;
+      
+      function setTax(val) {
+  selectedTax = parseFloat(val) / 100 || 0;
+  editPriceStuff();
+}
+      
+      function setCC(val) {
+  selectedCC = parseFloat(val) / 100 || 0;
+  editPriceStuff();
+}
+      
+function editPriceStuff(){
+    console.log("editPriceStuff fired");
+
+        console.log({totalBilled, totalPaid, selectedTax, selectedCC});
+
+  
+  let newOwed =  ((totalBilled * (1 + selectedTax) + totalPaid) * (1 + selectedCC)).toFixed(2);
+  let newBilled= (totalBilled * (1 + selectedTax) * (1 + selectedTax)).toFixed(2);
+
+     
+  document.getElementById("ttlBilled").innerHTML = `<b>Subtotal:</b> $${newBilled}`;
+  document.getElementById("balance").innerHTML = `<b>Balance:</b> $${newOwed}`;
+  
+  
+  
+}     
+      
+async function deleteActivity(id) {
+
+  if (!confirm("Delete this activity? This cannot be undone.")) {
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("action", "deleteActivity");
+  formData.append("id", id);
+  formData.append("password", sessionStorage.getItem("auth"));
+
+  const response = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  });
+
+  const result = await response.text();
+
+  alert(result);
+
+  // Refresh current job details
+  loadJobDetails();
+}
+ 
     </script>
     
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjjfAqD4q5A14OP8by5TVuxDdr0-bK-E7svaLKFsZDxJrJHHlRsiaZqEvZxDzFVSY5/exec";
-
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9yBYJM67r9f5vcSI00dbIPML4-9SxOBOmaU6XzS8cfBHWY42nDhKZrCF_Rwfq746C/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
@@ -616,7 +691,7 @@ function loadAppointments() {
 
   if (!lastName && !phone) return;
 
-  const url = `${SCRIPT_URL}?action=getAppointments&lastName=${lastName}&phone=${phone}`;
+  const url = `${SCRIPT_URL}?action=getAppointments&lastName=${lastName}&phone=${phone}&password=${sessionStorage.getItem("auth")}`;
 
   const select = document.getElementById("appointmentSelect");
   select.innerHTML = '<option>Loading...</option>';
