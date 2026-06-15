@@ -294,8 +294,9 @@
 </div>
   
   
-
+<!-- LOGON SCREEN -->
     <script>
+     
 document.getElementById("loginButton").addEventListener("click", () => {
   const password = document.getElementById("password").value;
 
@@ -317,6 +318,8 @@ document.getElementById("loginButton").addEventListener("click", () => {
       
   
   </script>
+  
+  <!-- Custom fetch submit -->
     <script>
 window.addEventListener('DOMContentLoaded', () => {
 
@@ -375,7 +378,16 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
+  
+  //block enter to submit
+  forms.forEach((form) => {
+    form.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+  }
+});
+    
+  });
   window.addEventListener('pageshow', (event) => {
     if (event.persisted) {
       loader.style.display = 'none';
@@ -386,7 +398,7 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
     
     
-        <!-- Search work -->
+        <!-- Search past work -->
     <script>
 document.getElementById("pastPhone")
   .addEventListener("change", loadPastJobs);
@@ -400,8 +412,6 @@ document.getElementById("pastPhone")
 
         
         function loadPastJobs() {
-
-
 
   const phone =
     document.getElementById("pastPhone").value;
@@ -508,8 +518,8 @@ if (amt < 0){
   totalOwed += amt;
 });
 
-    let taxAmount = (job.job.tax + 1) * totalBilled;
-    let ccFee = (totalBilled + totalPaid) * (1 + job.job.cc);
+  //  let taxAmount = (job.job.tax + 1) * totalBilled;
+    //let ccFee = (totalBilled + totalPaid) * (1 + job.job.cc);
 
     document.getElementById("jobDetails").innerHTML = `
     <label >Tax Amount</label>
@@ -528,7 +538,7 @@ if (amt < 0){
   </select>
   
   <button onclick="">Close Job and Add Fees</button>
-  <button onclick="">Send Invoice</button>    
+  <button onclick="">Close Job <br> Add Fees <br> Send Invoice</button>    
       
       <h3>Job #${job.job.jobID}</h3>
       
@@ -614,7 +624,7 @@ function editPriceStuff(){
 
   
   let newOwed =  ((totalBilled * (1 + selectedTax) + totalPaid) * (1 + selectedCC)).toFixed(2);
-  let newBilled= (totalBilled * (1 + selectedTax) * (1 + selectedTax)).toFixed(2);
+  let newBilled= (totalBilled * (1 + selectedTax)).toFixed(2);
 
      
   document.getElementById("ttlBilled").innerHTML = `<b>Subtotal:</b> $${newBilled}`;
@@ -765,4 +775,5 @@ function formatDateTime(date, time) {
   
   
 </html>
+
 
