@@ -135,7 +135,7 @@
   <h2>Book an Appointment</h2>
     
     <label for="phone">Phone*</label>
-  <input type="tel" name="phone" placeholder="123-456-7890" required>
+  <input type="text" name="phone" placeholder="123-456-7890" required>
 
     <label for="address">Address*</label>
   <input type="text" name="address" placeholder="123 Make Belive Dr, Brooklyn NY 11210" required>
@@ -248,8 +248,7 @@
 
   <h2>Search Past Work</h2>
 
-  <label>Last Name</label>
-  <input id="pastLastName">
+
 
   <label>Phone</label>
   <input id="pastPhone">
@@ -274,74 +273,7 @@
 </div>
   
   
-<!-- Tabs -->
- 
 
-     <!--
-     loading sign 
-  <script>
-  window.addEventListener('DOMContentLoaded', () => {
-  const forms = document.querySelectorAll('form');
-  const loader = document.getElementById('loading-overlay');
-
-  forms.forEach((form) => {
-    form.addEventListener('submit', () => {
-      // Force the display to flex
-      loader.style.display = 'flex';
-      console.log("Form submitted, loader should show.");
-    });
-  });
-
-  // Fix for the 'Back' button
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      loader.style.display = 'none';
-    }
-  });
-});
-    
-    
-      </script>
-      -->
-  
-<!--  <script>
-window.addEventListener('DOMContentLoaded', () => {
-  const forms = document.querySelectorAll('form');
-  const loader = document.getElementById('loading-overlay');
-
-  forms.forEach((form) => {
-    form.addEventListener('submit', async (e) => {
-
-      e.preventDefault(); // STOP normal form submit
-
-      loader.style.display = 'flex';
-
-      try {
-        const response = await fetch(SCRIPT_URL, {
-          method: form.method || 'POST',
-          body: new FormData(form)
-        });
-
-        const result = await response.text();
-
-        alert(result); // Show Apps Script response
-
-      } catch (err) {
-        console.error(err);
-        alert('Submission failed.');
-      } finally {
-        loader.style.display = 'none';
-      }
-    });
-  });
-
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      loader.style.display = 'none';
-    }
-  });
-});
-</script>-->
     <script>
 document.getElementById("loginButton").addEventListener("click", () => {
   const password = document.getElementById("password").value;
@@ -438,28 +370,22 @@ window.addEventListener('DOMContentLoaded', () => {
 document.getElementById("pastPhone")
   .addEventListener("change", loadPastJobs);
 
-document.getElementById("pastLastName")
-  .addEventListener("change", loadPastJobs);
 
 document.getElementById("pastPhone")
   .addEventListener("keydown", e => {
     if (e.key === "Enter") loadPastJobs();
   });
 
-document.getElementById("pastLastName")
-  .addEventListener("keydown", e => {
-    if (e.key === "Enter") loadPastJobs();
-  });
+
         
         function loadPastJobs() {
 
-  const lastName =
-    document.getElementById("pastLastName").value;
+
 
   const phone =
     document.getElementById("pastPhone").value;
 
-  if (!lastName && !phone) return;
+  if (!phone) return;
 
   const select =
     document.getElementById("pastJobSelect");
@@ -470,7 +396,7 @@ document.getElementById("pastLastName")
   select.disabled = true;
 
   const url =
-    `${SCRIPT_URL}?action=getJobs&lastName=${encodeURIComponent(lastName)}&phone=${encodeURIComponent(phone)}&password=${sessionStorage.getItem("auth")}`;
+    `${SCRIPT_URL}?action=getJobs&phone=${encodeURIComponent(phone)}&password=${sessionStorage.getItem("auth")}`;
 
   fetch(url)
     .then(res => res.json())
@@ -561,13 +487,11 @@ if (amt < 0){
   totalOwed += amt;
 });
 
+    let taxAmount = (job.job.tax + 1) * totalBilled;
+    let ccFee = (totalBilled + totalPaid) * (1 + job.job.cc);
 
     document.getElementById("jobDetails").innerHTML = `
-      <button onclick="">Add Charge/Payment</button>
-      <button onclick="">Close Job</button>
-      <button onclick="">Send Invoice</button>
-      
-              <label >Tax Amount</label>
+    <label >Tax Amount</label>
     <select name="tax"  id="tax" onchange="setTax(this.value)">
         <option value="0"> </option>
         <option value="8">8%</option>
@@ -581,10 +505,12 @@ if (amt < 0){
     <option value="4">Yes</option>
     <option value="0">No</option>
   </select>
-      
+  
+  <button onclick="">Close Job and Add Fees</button>
+  <button onclick="">Send Invoice</button>    
       
       <h3>Job #${job.job.jobID}</h3>
-
+      
       <p><b>Customer:</b> ${job.job.lastName}</p>
 
       <p><b>Machine:</b> ${job.job.machine}</p>
@@ -592,8 +518,10 @@ if (amt < 0){
       <p><b>Status:</b> ${job.job.status}</p>
       
       <hr>
+      
+      <h3>Payments</h3>
 
-      <p id="ttlBilled"><b>Total:</b> $${totalBilled}</p>
+      <p id="ttlBilled"><b>Subtotal:</b> $${totalBilled}</p>
       
       <p><b>Paid:</b> $${totalPaid}</p>
       
@@ -611,11 +539,8 @@ if (amt < 0){
       $${a.amount || ""}
     </div>
 
-    <button 
-      class="delete-activity"
-      data-jobid="${job.job.jobID}"
-      data-date="${a.date}"
-      style="
+    <button type="button" onclick="deleteActivity('${a.id}')"
+        style="
           display:flex;
       justify-content:center;
       align-items:center;
@@ -638,8 +563,10 @@ if (amt < 0){
     </button>
 
   </div>
+ 
         <hr>
       `).join("")}
+       <button onclick="">Add Charge/Payment</button>
     `;
 
     
@@ -669,21 +596,43 @@ function editPriceStuff(){
   let newBilled= (totalBilled * (1 + selectedTax) * (1 + selectedTax)).toFixed(2);
 
      
-
-  
-  document.getElementById("ttlBilled").innerHTML = `<b>Total:</b> $${newBilled}`;
+  document.getElementById("ttlBilled").innerHTML = `<b>Subtotal:</b> $${newBilled}`;
   document.getElementById("balance").innerHTML = `<b>Balance:</b> $${newOwed}`;
   
-
+  
   
 }     
+      
+async function deleteActivity(id) {
+
+  if (!confirm("Delete this activity? This cannot be undone.")) {
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("action", "deleteActivity");
+  formData.append("id", id);
+  formData.append("password", sessionStorage.getItem("auth"));
+
+  const response = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  });
+
+  const result = await response.text();
+
+  alert(result);
+
+  // Refresh current job details
+  loadJobDetails();
+}
  
     </script>
     
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_WkdnF5mHHJlcEdc6JgVlm1w-XSY7cR-qx3WDk4f4znwX21anOyClqCTV65U8f8mO/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9yBYJM67r9f5vcSI00dbIPML4-9SxOBOmaU6XzS8cfBHWY42nDhKZrCF_Rwfq746C/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
