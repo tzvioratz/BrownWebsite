@@ -537,8 +537,13 @@ if (amt < 0){
     <option value="0">No</option>
   </select>
   
+<<<<<<< Updated upstream
   <button onclick="">Close Job and Add Fees</button>
   <button onclick="">Close Job <br> Add Fees <br> Send Invoice</button>    
+=======
+  <button onclick="">Close Job</button>
+  <button onclick="">Send Invoice</button>    
+>>>>>>> Stashed changes
       
       <h3>Job #${job.job.jobID}</h3>
       
@@ -563,14 +568,14 @@ if (amt < 0){
       <h3>Activity</h3>
 
       ${job.activity.map(a => `
-<div style="display:flex;  justify-content:space-between;  align-items:center; margin:5px 0;">
+<div id="activity-${a.id}" style="display:flex;  justify-content:space-between;  align-items:center; margin:5px 0;">
     
     <div>
       ${a.note}<br>
       $${a.amount || ""}
     </div>
 
-    <button type="button" onclick="deleteActivity('${a.id}')"
+    <button type="button" onclick="deleteActivity('${a.id},${a.amount || 0}')"
         style="
           display:flex;
       justify-content:center;
@@ -594,8 +599,8 @@ if (amt < 0){
     </button>
 
   </div>
- 
-        <hr>
+ <hr>
+        
       `).join("")}
        <button onclick="">Add Charge/Payment</button>
     `;
@@ -634,7 +639,7 @@ function editPriceStuff(){
   
 }     
       
-async function deleteActivity(id) {
+async function deleteActivity(id,amount) {
 
   if (!confirm("Delete this activity? This cannot be undone.")) {
     return;
@@ -655,7 +660,15 @@ async function deleteActivity(id) {
   alert(result);
 
   // Refresh current job details
-  loadJobDetails();
+  document.getElementById(`activity-${id}`)?.remove();
+   if (amount > 0) {
+      totalBilled -= amount;
+    }
+   if (amount < 0) {
+      totalBilled -= amount;
+    }
+editPriceStuff();
+  //loadJobDetails();
 }
  
     </script>
