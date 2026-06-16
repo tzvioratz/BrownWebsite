@@ -485,6 +485,8 @@ document.getElementById("pastPhone")
 let totalBilled = 0;
 let totalOwed = 0;
 let totalPaid = 0;
+let totalTax = 0;
+      let ccFees = 0;
         
 function loadJobDetails() {
 
@@ -500,9 +502,11 @@ function loadJobDetails() {
       
       const activity = job.activity || [];
 
- totalBilled = 0;
- totalOwed = 0;
- totalPaid = 0;
+  totalBilled = 0;
+  totalOwed = 0;
+  totalPaid = 0;
+  totalTax = 0;
+  ccFees = 0;
 
 activity.forEach(a => {
 
@@ -522,7 +526,9 @@ if (amt < 0){
     //let ccFee = (totalBilled + totalPaid) * (1 + job.job.cc);
 
     document.getElementById("jobDetails").innerHTML = `
-    <label >Tax Amount</label>
+    <hr>
+
+   <label >Tax Amount</label>
     <select name="tax"  id="tax" onchange="setTax(this.value)">
         <option value="0"> </option>
         <option value="8">8%</option>
@@ -532,18 +538,14 @@ if (amt < 0){
         
          <label >Credit Card Fee?</label>
   <select name="cc"  id="cc" onchange="setCC(this.value)">
-    <option value=""></option>
+    <option value="0"></option>
     <option value="4">Yes</option>
     <option value="0">No</option>
   </select>
   
-<<<<<<< Updated upstream
-  <button onclick="">Close Job and Add Fees</button>
-  <button onclick="">Close Job <br> Add Fees <br> Send Invoice</button>    
-=======
-  <button onclick="">Close Job</button>
-  <button onclick="">Send Invoice</button>    
->>>>>>> Stashed changes
+
+  <button  type="button" onclick="closeAndSaveFees(${job.job.jobID}, '${job.job.status}')">Close Job & Add Fees</button>
+  <button  type="button" onclick="">Send Invoice</button>    
       
       <h3>Job #${job.job.jobID}</h3>
       
@@ -559,7 +561,11 @@ if (amt < 0){
 
       <p id="ttlBilled"><b>Subtotal:</b> $${totalBilled}</p>
       
-      <p><b>Paid:</b> $${totalPaid}</p>
+      <p id="owedTaxes"> <b>Tax:</b> $${totalTax}</p>
+      
+      <p id="amountPaid"><b>Paid:</b> $${totalPaid}</p>
+      
+      <p id="creditCardFees"> <b>Credit Card Fees:</b> $${ccFees}</p>
       
       <p id="balance"><b>Balance:</b> $${totalOwed}</p>
 
@@ -575,7 +581,7 @@ if (amt < 0){
       $${a.amount || ""}
     </div>
 
-    <button type="button" onclick="deleteActivity('${a.id},${a.amount || 0}')"
+    <button type="button" onclick="deleteActivity('${a.id}','${a.amount || 0}')"
         style="
           display:flex;
       justify-content:center;
@@ -602,7 +608,9 @@ if (amt < 0){
  <hr>
         
       `).join("")}
-       <button onclick="">Add Charge/Payment</button>
+      
+      <!-- add the form for the charge, Div so type on same line--!>
+       <button  type="button" onclick="">Add Charge/Payment</button>
     `;
 
     
@@ -627,19 +635,25 @@ function editPriceStuff(){
 
         console.log({totalBilled, totalPaid, selectedTax, selectedCC});
 
+  totalTax = (totalBilled * selectedTax);
+  ccFees = ((totalBilled + totalTax + totalPaid) * selectedCC);
+  let newOwed =  ((totalBilled * (1 + selectedTax) + totalPaid) * (1 + selectedCC));
+  //let newBilled= (totalBilled * (1 + selectedTax));
   
-  let newOwed =  ((totalBilled * (1 + selectedTax) + totalPaid) * (1 + selectedCC)).toFixed(2);
-  let newBilled= (totalBilled * (1 + selectedTax)).toFixed(2);
 
      
-  document.getElementById("ttlBilled").innerHTML = `<b>Subtotal:</b> $${newBilled}`;
-  document.getElementById("balance").innerHTML = `<b>Balance:</b> $${newOwed}`;
+  document.getElementById("ttlBilled").innerHTML = `<b>Subtotal:</b> $${totalBilled.toFixed(2)}`;
+  document.getElementById("balance").innerHTML = `<b>Balance:</b> $${newOwed.toFixed(2)}`;
+  document.getElementById("amountPaid").innerHTML = `<b>Paid:</b> $${totalPaid.toFixed(2)}`;
+  document.getElementById("owedTaxes").innerHTML = `<b>Tax:</b> $${totalTax.toFixed(2)}</p>`;
+  document.getElementById("creditCardFees").innerHTML = `<b>Credit Card Fees:</b> $${ccFees.toFixed(2)}</p>`;
+
   
   
   
 }     
       
-async function deleteActivity(id,amount) {
+async function deleteActivity(id, amount) {
 
   if (!confirm("Delete this activity? This cannot be undone.")) {
     return;
@@ -650,14 +664,14 @@ async function deleteActivity(id,amount) {
   formData.append("id", id);
   formData.append("password", sessionStorage.getItem("auth"));
 
-  const response = await fetch(SCRIPT_URL, {
+  const response =  fetch(SCRIPT_URL, {
     method: "POST",
     body: formData
   });
 
-  const result = await response.text();
+  //const result = await response.text();
 
-  alert(result);
+  //alert(result);
 
   // Refresh current job details
   document.getElementById(`activity-${id}`)?.remove();
@@ -665,18 +679,45 @@ async function deleteActivity(id,amount) {
       totalBilled -= amount;
     }
    if (amount < 0) {
-      totalBilled -= amount;
+     totalPaid -= amount;
+     
     }
 editPriceStuff();
   //loadJobDetails();
 }
- 
+      
+async function  closeAndSaveFees(jobID,status){
+  if (status!="Open"){
+    if (!confirm("Job is already closed, This will add taxes and cc fees. Please Confirm they are not charged twice! NOTE TO DEV, CHANGE THIS, FEES ADDED WHEN PAYING")) {
+    return;
+  }
+  }
+  const formData = new FormData();
+  formData.append("action", "closeAndAddFees");
+  formData.append("jobID",jobID);
+  formData.append("tax",totalTax);
+  formData.append("ccFee",ccFees);
+  formData.append("password",sessionStorage.getItem("auth"));
+  
+   const response =  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  });
+}
+async function  addActivity(jobID){
+  
+  const formData = new FormData();
+  formData.append("action", "addActivity");
+  formData.append("jobID",jobID);
+  //the form info
+  
+}
     </script>
     
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC0kEltyUAC5NUlBQl3bKuMs9CkK63qfD89ugF137_mW92b6KkBe5jCDGfvJSP5RQl/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiaVGpo-gZLiVcAHiVnZsxy-9a-mnIgl8WRffsR2jx-vi3XJ7KaFp-T-Y4lmonDFmQqA/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
