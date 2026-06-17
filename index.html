@@ -609,8 +609,37 @@ if (amt < 0){
         
       `).join("")}
       
-      <!-- add the form for the charge, Div so type on same line--!>
-       <button  type="button" onclick="">Add Charge/Payment</button>
+      
+          <h2>Add Job Activity</h2>    
+          <label for="chargeNotes">Job Activity</label>
+  <textarea name="chargeNotes" id="chargeNotesSPW" placeholder="notes..."></textarea>
+        
+         <label for="price">Price</label>
+  <input type="number" name="charge" id="chargeSPW" >
+        
+     <h2>Add Job Payment</h2>   
+
+        <label for="paymentType">Payment Method</label>
+  <select name="paymentType" id="paymentType" >
+    <option value=""></option>
+    <option value="Payment - Cash">Cash</option>
+    <option value="Payment - Credit Card">Credit Card</option>
+    <option value="Payment - Zelle">Zelle</option>
+    <option value="Payment - Check">Check</option>
+  </select>
+        
+    <label for="paid">Amount Paid</label>
+  <input type="number" name="paid" id="paid" >
+  
+    <label >Tax Amount</label>
+    <select name="tax"  id="taxSPW" >
+        <option value="0"> </option>
+        <option value="8">8%</option>
+        <option value="8.875">8.875%</option>
+        
+    </select>
+      
+       <button  type="button" onclick="addActivity(${job.job.jobID})">Add Charge/Payment</button>
     `;
 
     
@@ -705,19 +734,36 @@ async function  closeAndSaveFees(jobID,status){
   });
 }
 async function  addActivity(jobID){
+  //WORKING HERE
+  
+  const chargeNotes = document.getElementById("chargeNotesSPW").value.trim();
+  const charge = Number(document.getElementById("chargeSPW").value) || 0;
+  const tax = document.getElementById("taxSPW").value/100;
+  const paymentType = document.getElementById("paymentType").value;
+  const paid = Number(document.getElementById("paid").value) || 0;
+  
   
   const formData = new FormData();
   formData.append("action", "addActivity");
   formData.append("jobID",jobID);
+  formData.append("paid",-paid);
+  formData.append("paymentType",paymentType);
+  formData.append("charge",charge);
+  formData.append("chargeNotes",chargeNotes);
+  formData.append("tax",tax);
+  formData.append("password",sessionStorage.getItem("auth"));
   //the form info
-  
+  const response =  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  });
 }
     </script>
     
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiaVGpo-gZLiVcAHiVnZsxy-9a-mnIgl8WRffsR2jx-vi3XJ7KaFp-T-Y4lmonDFmQqA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHfTLisBPnZEtBHYzR4lSs4kNU5HXyhl1Z1mxTw0F0E5tABbl1GujJYJOnUAbLVhnv3g/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
