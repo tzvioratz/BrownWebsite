@@ -211,31 +211,36 @@
   <input name="phone" id="cancelPhone" >
 
   <label>Select Job</label>
-  <select name="appointmentId" id="appointmentSelect" required>
+  <select name="jobID" id="appointmentSelect" required>
     <option value="">Enter info first</option>
   </select>
     <h2>Add Job Activity</h2>    
-          <label for="extraNotes">Job Activity</label>
-  <textarea name="extraNotes" placeholder="notes..."></textarea>
+          <label for="chargeNotes">Job Activity</label>
+  <textarea name="chargeNotes" placeholder="notes..."></textarea>
         
-         <label for="price">Price</label>
-  <input type="number" name="price" id="price" >
+         <label for="charge">Price</label>
+  <input type="number" name="charge" id="price" >
         
      <h2>Add Job Payment</h2>   
 
-        <label for="paymentNote">Payment Method</label>
-  <select name="paymentNote" id="paymentNote" >
+        <label for="paymentType">Payment Method</label>
+  <select name="paymentType" id="paymentNote" >
     <option value=""></option>
     <option value="Payment - Cash">Cash</option>
     <option value="Payment - Credit Card">Credit Card</option>
-    <option value="Payment - Deposit">Deposit</option>
     <option value="Payment - Zelle">Zelle</option>
     <option value="Payment - Check">Check</option>
   </select>
         
-    <label for="paymentAmount">Amount Paid</label>
-  <input type="number" name="paymentAmount" id="paymentAmount" >
+    <label for="paid">Amount Paid</label>
+  <input type="number" name="paid" id="paymentAmount" >
       
+              <label for="tax">Tax Amount</label>
+    <select name="tax" id="tax" >
+        <option value="0"></option>
+        <option value="8">8%</option>
+        <option value="8.875">8.875%</option>
+    </select>
 
   
 <button type="submit" name="action" value="notes">Record Activity & Payment</button>
@@ -246,17 +251,11 @@
           <label for="email">Email</label>
   <input name="email" type="email" placeholder="email@example.com" >
         
-        <label for="tax">Tax Amount</label>
-    <select name="tax" id="tax" >
-        <option value=""></option>
-        <option value="8">8%</option>
-        <option value="8.875">8.875%</option>
-        <option value="0">😜</option>
-    </select>
+
         
          <label for="cc">Credit Card Fee?</label>
   <select name="cc" id="cc" >
-    <option value=""></option>
+    <option value="0"></option>
     <option value="4">Yes</option>
     <option value="0">No</option>
   </select>
@@ -559,15 +558,15 @@ if (amt < 0){
       
       <h3>Payments</h3>
 
-      <p id="ttlBilled"><b>Subtotal:</b> $${totalBilled}</p>
+      <p id="ttlBilled"><b>Subtotal:</b> $${totalBilled.toFixed(2)}</p>
       
-      <p id="owedTaxes"> <b>Tax:</b> $${totalTax}</p>
+      <p id="owedTaxes"> <b>Tax:</b> $${totalTax.toFixed(2)}</p>
       
-      <p id="amountPaid"><b>Paid:</b> $${totalPaid}</p>
+      <p id="amountPaid"><b>Paid:</b> $${totalPaid.toFixed(2)}</p>
       
-      <p id="creditCardFees"> <b>Credit Card Fees:</b> $${ccFees}</p>
+      <p id="creditCardFees"> <b>Credit Card Fees:</b> $${ccFees.toFixed(2)}</p>
       
-      <p id="balance"><b>Balance:</b> $${totalOwed}</p>
+      <p id="balance"><b>Balance:</b> $${totalOwed.toFixed(2)}</p>
 
       <hr>
 
@@ -698,9 +697,9 @@ async function deleteActivity(id, amount) {
     body: formData
   });
 
-  //const result = await response.text();
+  const result = await response.text();
 
-  //alert(result);
+  alert(result);
 
   // Refresh current job details
   document.getElementById(`activity-${id}`)?.remove();
@@ -728,7 +727,7 @@ async function  closeAndSaveFees(jobID,status){
   formData.append("ccFee",ccFees);
   formData.append("password",sessionStorage.getItem("auth"));
   
-   const response =  fetch(SCRIPT_URL, {
+   fetch(SCRIPT_URL, {
     method: "POST",
     body: formData
   });
@@ -737,10 +736,10 @@ async function  addActivity(jobID){
   //WORKING HERE
   
   const chargeNotes = document.getElementById("chargeNotesSPW").value.trim();
-  const charge = Number(document.getElementById("chargeSPW").value) || 0;
+  const charge =document.getElementById("chargeSPW").value ;
   const tax = document.getElementById("taxSPW").value/100;
   const paymentType = document.getElementById("paymentType").value;
-  const paid = Number(document.getElementById("paid").value) || 0;
+  const paid = document.getElementById("paid").value;
   
   
   const formData = new FormData();
@@ -753,17 +752,18 @@ async function  addActivity(jobID){
   formData.append("tax",tax);
   formData.append("password",sessionStorage.getItem("auth"));
   //the form info
-  const response =  fetch(SCRIPT_URL, {
+ const responce = fetch(SCRIPT_URL, {
     method: "POST",
     body: formData
   });
+  alert (responce);
 }
     </script>
     
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHfTLisBPnZEtBHYzR4lSs4kNU5HXyhl1Z1mxTw0F0E5tABbl1GujJYJOnUAbLVhnv3g/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZin5bpiczp0iyw8J2pp3UQv547Us-vDJCIL9fHQ2zGb09JmMRTkGi4mJlL7ddaNpaMw/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
