@@ -756,7 +756,9 @@ async function  addActivity(jobID){
     method: "POST",
     body: formData
   });
-  alert (responce);
+  
+  forms.forEach(f => f.reset());
+  alert (responce.text);
 }
     </script>
     
