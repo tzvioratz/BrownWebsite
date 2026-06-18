@@ -532,7 +532,7 @@ if (amt < 0){
     <hr>
 
    <label >Tax Amount</label>
-    <select name="tax"  id="tax" onchange="setTax(this.value)">
+    <select name="tax"  id="taxSPW" onchange="setTax(this.value)">
         <option value="0"> </option>
         <option value="8">8%</option>
         <option value="8.875">8.875%</option>
@@ -540,15 +540,18 @@ if (amt < 0){
     </select>
         
          <label >Credit Card Fee?</label>
-  <select name="cc"  id="cc" onchange="setCC(this.value)">
+  <select name="cc"  id="ccSPW" onchange="setCC(this.value)">
     <option value="0"></option>
     <option value="4">Yes</option>
     <option value="0">No</option>
   </select>
   
+  <label for="email">Email</label>
+  <input type="text" name="email" id="emailSPW" >
+  
 
-  <button  type="button" onclick="closeAndSaveFees(${job.job.jobID}, '${job.job.status}')">Close Job & Add Fees</button>
-  <button  type="button" onclick="">Send Invoice</button>    
+  <button  type="button" onclick="closeAndSaveFees(${job.job.jobID}, '${job.job.status}')">Close Job</button>
+  <button  type="button" onclick="sendEmail(${job.job.jobID},document.getElementById('ccSPW').value,document.getElementById('taxSPW').value,document.getElementById('emailSPW').value)">Send Invoice</button>    
       
       <h3>Job #${job.job.jobID}</h3>
       
@@ -635,7 +638,7 @@ if (amt < 0){
   <input type="number" name="paid" id="paid" >
   
     <label >Tax Amount</label>
-    <select name="tax"  id="taxSPW" >
+    <select name="tax"  id="taxSPW2" >
         <option value="0"> </option>
         <option value="8">8%</option>
         <option value="8.875">8.875%</option>
@@ -684,6 +687,25 @@ function editPriceStuff(){
   
   
 }     
+async function sendEmail(jobID,cc, tax,email){
+    const formData = new FormData();
+      formData.append("action", "justSendInvoice");
+  formData.append("jobID", jobID);
+  formData.append("password", sessionStorage.getItem("auth"));
+  formData.append("cc", cc);
+  formData.append("tax", tax);
+  formData.append("email", email);
+  
+    const response = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  });
+
+  const result = await response.text();
+
+  alert(result);
+  
+}
       
 async function deleteActivity(id, amount) {
 
@@ -693,7 +715,7 @@ async function deleteActivity(id, amount) {
 
   const formData = new FormData();
   formData.append("action", "deleteActivity");
-  formData.append("id", id);
+  formData.append("jobID", id);
   formData.append("password", sessionStorage.getItem("auth"));
 
   const response = await fetch(SCRIPT_URL, {
@@ -719,11 +741,11 @@ editPriceStuff();
 }
       
 async function  closeAndSaveFees(jobID,status){
-  if (status!="Open"){
-  //  if (!confirm("Job is already closed, This will add taxes and cc fees. Please Confirm they are not charged twice! NOTE TO DEV, CHANGE THIS, FEES ADDED WHEN PAYING")) {
-  //  return;
-  }
-  }
+  //if (status!="Open"){
+   //if (!confirm("Job is already closed, This will add taxes and cc fees. Please Confirm they are not charged twice! NOTE TO DEV, CHANGE THIS, FEES ADDED WHEN PAYING")) {
+   //return;
+  //}
+  //}
   const formData = new FormData();
   formData.append("action", "closeAndAddFees");
   formData.append("jobID",jobID);
@@ -741,11 +763,12 @@ async function  addActivity(jobID){
   
   const chargeNotes = document.getElementById("chargeNotesSPW").value.trim();
   const charge =document.getElementById("chargeSPW").value ;
-  const tax = document.getElementById("taxSPW").value;
+  const tax = document.getElementById("taxSPW2").value;
   const paymentType = document.getElementById("paymentType").value;
   const paid = document.getElementById("paid").value;
   
   Array.from(document.forms).forEach(form => form.reset());
+  document.getElementById("jobDetails").innerHTML =``;
   
   const formData = new FormData();
   formData.append("action", "addActivity");
@@ -762,13 +785,14 @@ async function  addActivity(jobID){
     body: formData
   });
   alert (await response.text());
+
 }
     </script>
     
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywGyHeukUnEeV7KDTAd8shPI5rXCVE56oI-K3mp5XV2NaMPT5qY5-yDEx-JRBMelbZuQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWCtevAyAx1TYB_pnWSBgRGwUB35-TE7CCWOPvZgCYdQ9lSZjJtFtfmqVPU-5Oo9P2/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
