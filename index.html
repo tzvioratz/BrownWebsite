@@ -232,8 +232,8 @@
     <option value="Payment - Check">Check</option>
   </select>
         
-    <label for="paid">Amount Paid</label>
-  <input type="number" name="paid" id="paymentAmount" >
+    <label for="posPaid">Amount Paid</label>
+  <input type="number" name="posPaid" id="paymentAmount" >
       
               <label for="tax">Tax Amount</label>
     <select name="tax" id="tax" >
@@ -353,7 +353,11 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         
         formData.append("password",sessionStorage.getItem("auth"));
-
+//here
+        if (formData.has("posPaid")){
+          formData.append("paid",-formData.get("posPaid"));
+        }
+        
         const response = await fetch(SCRIPT_URL, {
           method: form.method || 'POST',
           body: formData
@@ -562,9 +566,9 @@ if (amt < 0){
       
       <p id="owedTaxes"> <b>Tax:</b> $${totalTax.toFixed(2)}</p>
       
-      <p id="amountPaid"><b>Paid:</b> $${totalPaid.toFixed(2)}</p>
-      
       <p id="creditCardFees"> <b>Credit Card Fees:</b> $${ccFees.toFixed(2)}</p>
+      
+      <p id="amountPaid"><b>Paid:</b> $${totalPaid.toFixed(2)}</p>
       
       <p id="balance"><b>Balance:</b> $${totalOwed.toFixed(2)}</p>
 
@@ -692,7 +696,7 @@ async function deleteActivity(id, amount) {
   formData.append("id", id);
   formData.append("password", sessionStorage.getItem("auth"));
 
-  const response =  fetch(SCRIPT_URL, {
+  const response = await fetch(SCRIPT_URL, {
     method: "POST",
     body: formData
   });
@@ -716,8 +720,8 @@ editPriceStuff();
       
 async function  closeAndSaveFees(jobID,status){
   if (status!="Open"){
-    if (!confirm("Job is already closed, This will add taxes and cc fees. Please Confirm they are not charged twice! NOTE TO DEV, CHANGE THIS, FEES ADDED WHEN PAYING")) {
-    return;
+  //  if (!confirm("Job is already closed, This will add taxes and cc fees. Please Confirm they are not charged twice! NOTE TO DEV, CHANGE THIS, FEES ADDED WHEN PAYING")) {
+  //  return;
   }
   }
   const formData = new FormData();
@@ -737,10 +741,11 @@ async function  addActivity(jobID){
   
   const chargeNotes = document.getElementById("chargeNotesSPW").value.trim();
   const charge =document.getElementById("chargeSPW").value ;
-  const tax = document.getElementById("taxSPW").value/100;
+  const tax = document.getElementById("taxSPW").value;
   const paymentType = document.getElementById("paymentType").value;
   const paid = document.getElementById("paid").value;
   
+  Array.from(document.forms).forEach(form => form.reset());
   
   const formData = new FormData();
   formData.append("action", "addActivity");
@@ -752,20 +757,18 @@ async function  addActivity(jobID){
   formData.append("tax",tax);
   formData.append("password",sessionStorage.getItem("auth"));
   //the form info
- const responce = fetch(SCRIPT_URL, {
+ const response = await fetch(SCRIPT_URL, {
     method: "POST",
     body: formData
   });
-  
-  forms.forEach(f => f.reset());
-  alert (responce.text);
+  alert (await response.text());
 }
     </script>
     
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyJprzigclB7TkqVo75NKltJbhHkDkey6t6NX5qGx272Fvy9qZfXSJyo-vzkS9rE8y/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywGyHeukUnEeV7KDTAd8shPI5rXCVE56oI-K3mp5XV2NaMPT5qY5-yDEx-JRBMelbZuQ/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
