@@ -144,6 +144,8 @@
     <option value="WhatsApp Call"> WhatsApp Call</option>
     <option value="Call">Call</option>
     <option value="Text Message">Text Message</option>
+      <option value="Voice Call">Voice Call</option>
+      <option value="Voice Message">Voice Message</option>
     </select>
   
    <label for="phone">Alt Phone</label>
@@ -152,10 +154,12 @@
        <label for="altContactMethod">Alt Contact Method</label>
     <select name="altContactMethod" >
         <option value=""></option>
-    <option value="WhatsApp Message">WhatsApp Message</option>
+  <option value="WhatsApp Message">WhatsApp Message</option>
     <option value="WhatsApp Call"> WhatsApp Call</option>
     <option value="Call">Call</option>
     <option value="Text Message">Text Message</option>
+      <option value="Voice Call">Voice Call</option>
+      <option value="Voice Message">Voice Message</option>
     </select>
 
     <label for="address">Address*</label>
@@ -530,6 +534,7 @@ if (amt < 0){
 
     document.getElementById("jobDetails").innerHTML = `
     <hr>
+    <h3>Invoice Info</h3>
 
    <label >Tax Amount</label>
     <select name="tax"  id="taxSPW" onchange="setTax(this.value)">
@@ -548,10 +553,12 @@ if (amt < 0){
   
   <label for="email">Email</label>
   <input type="text" name="email" id="emailSPW" >
+    <label for="name">Name</label>
+  <input type="text" name="name" id="nameSPW" >
   
 
   <button  type="button" onclick="closeAndSaveFees(${job.job.jobID}, '${job.job.status}')">Close Job</button>
-  <button  type="button" onclick="sendEmail(${job.job.jobID},document.getElementById('ccSPW').value,document.getElementById('taxSPW').value,document.getElementById('emailSPW').value)">Send Invoice</button>    
+  <button  type="button" onclick="sendEmail(${job.job.jobID},document.getElementById('ccSPW').value,document.getElementById('taxSPW').value,document.getElementById('emailSPW').value,document.getElementById('nameSPW').value)">Send Invoice</button>    
       
       <h3>Job #${job.job.jobID}</h3>
       
@@ -687,7 +694,7 @@ function editPriceStuff(){
   
   
 }     
-async function sendEmail(jobID,cc, tax,email){
+async function sendEmail(jobID,cc, tax,email,name){
     const formData = new FormData();
       formData.append("action", "justSendInvoice");
   formData.append("jobID", jobID);
@@ -792,7 +799,7 @@ async function  addActivity(jobID){
     
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWCtevAyAx1TYB_pnWSBgRGwUB35-TE7CCWOPvZgCYdQ9lSZjJtFtfmqVPU-5Oo9P2/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz02r-_aEy4-Jv9w--e2FH1sEkxGllHd6CVH6_iRA8bZObKoDCH4AzAVCRQULi5cSK8Lw/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
