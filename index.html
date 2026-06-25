@@ -248,7 +248,7 @@
   <textarea name="chargeNotes" placeholder="notes..."></textarea>
         
          <label for="charge">Price</label>
-  <input type="number" name="charge" id="price" >
+  <input type="number" step="0.01" inputmode="decimal" name="charge" id="price" >
         
      <h2>Add Job Payment</h2>   
 
@@ -262,7 +262,7 @@
   </select>
         
     <label for="posPaid">Amount Paid</label>
-  <input type="number" name="posPaid" id="paymentAmount" >
+  <input type="number" step="0.01" inputmode="decimal" name="posPaid" id="paymentAmount" >
       
               <label for="tax">Tax Amount</label>
     <select name="tax" id="tax" >
@@ -653,7 +653,7 @@ if (amt < 0){
   <textarea name="chargeNotes" id="chargeNotesSPW" placeholder="notes..."></textarea>
         
          <label for="price">Price</label>
-  <input type="number" name="charge" id="chargeSPW" >
+  <input type="number" step="0.01" inputmode="decimal" name="charge" id="chargeSPW" >
         
      <h2>Add Job Payment</h2>   
 
@@ -667,7 +667,7 @@ if (amt < 0){
   </select>
         
     <label for="paid">Amount Paid</label>
-  <input type="number" name="paid" id="paid" >
+  <input type="number" step="0.01" inputmode="decimal" name="paid" id="paid" >
   
     <label >Tax Amount</label>
     <select name="tax"  id="taxSPW2" >
