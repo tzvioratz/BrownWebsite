@@ -594,9 +594,29 @@ if (amt < 0){
 
   <button  type="button" onclick="closeAndSaveFees(${job.job.jobID}, '${job.job.status}')">Close Job</button>
   <button  type="button" id="sendEmailButton" onclick="sendEmail(${job.job.jobID},document.getElementById('ccSPW').value,document.getElementById('taxSPW').value,document.getElementById('emailSPW').value,document.getElementById('nameSPW').value)">Send Invoice</button>    
+      <div class="row" >
+      <div class="phone-field">
+       <h3>Job #${job.job.jobID}</h3>
+  </div>
+     <div class="contact-field">
+        <button 
+          type="button" 
+          onclick='editJob(${JSON.stringify(job.job)})'
+          style="
+          border:none;
+          background:none;
+          font-size:22px;
+          cursor:pointer;
+          padding:0px;
+          "
+          title="Edit Job">
+          ✏️
+        </button>
+      </div>
       
-      <h3>Job #${job.job.jobID}</h3>
-      
+
+      </div>
+          
       <p><b>Customer:</b> ${job.job.lastName}</p>
 
       <p><b>Machine:</b> ${job.job.machine}</p>
