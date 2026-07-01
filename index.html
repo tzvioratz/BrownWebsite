@@ -695,10 +695,11 @@ if (amt < 0){
   <button  type="button" onclick="closeAndSaveFees(${job.job.jobID}, '${job.job.status}')">Close Job</button>
   <button  type="button" id="sendEmailButton" onclick="sendEmail(${job.job.jobID},document.getElementById('ccSPW').value,document.getElementById('taxSPW').value,document.getElementById('emailSPW').value,document.getElementById('nameSPW').value)">Send Invoice</button>    
       <div class="row" >
-      <div class="phone-field">
+      <div style="flex:2;>
        <h3>Job #${job.job.jobID}</h3>
   </div>
-     <div class="contact-field">
+  
+     <div style="flex: 1;>
         <button 
           type="button" 
           onclick='editJob(${JSON.stringify(job.job)})'
@@ -711,6 +712,20 @@ if (amt < 0){
           "
           title="Edit Job">
           ✏️
+        </button>
+
+        <button 
+          type="button" 
+          onclick='copyJob(${JSON.stringify(job.job)})'
+          style="
+          border:none;
+          background:none;
+          font-size:22px;
+          cursor:pointer;
+          padding:0px;
+          "
+          title="copy Job">
+          📑
         </button>
       </div>
       
@@ -867,6 +882,25 @@ function editPriceStuff(){
   
 }
       
+            function copyJob() {
+
+    document.getElementById("Past").style.display = "none";
+    document.getElementById("bookingForm").style.display = "block";
+        
+        document.getElementById("phone").value = currentJob.phone || "";
+        document.getElementById("contactMethod").value = currentJob.phoneMethod  || "";
+        document.getElementById("altPhone").value = currentJob.phone2 || "";
+        document.getElementById("altContact").value = currentJob.phone2Method || "";
+        document.getElementById("address").value = currentJob.address || "";
+        document.getElementById("location").value = currentJob.zone || "";
+        document.getElementById("machine").value = currentJob.machine || "";
+        document.getElementById("lastName").value = currentJob.lastName || "";
+        document.getElementById("extraNotes").value = currentJob.notes || "";
+        
+
+  
+}
+      
       function cancelEditJob() {
 
     document.getElementById("EditJob").reset();
@@ -982,7 +1016,7 @@ async function  addActivity(jobID){
 <script>
 
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqPmNX9jPtdXwvipBb5oaVnjTpiCQJynuexuga-vWZCxLKXsZZf-WpRE4w46B-uG9ytg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFEux9yCe1VdzH4P4wp62A1nEP81gcFInNNywHktrrHU70J8UbYnzyiXAvJLMKb1pBrg/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
