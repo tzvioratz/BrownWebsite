@@ -155,12 +155,12 @@
     <div class="row">
   <div class="phone-field">
     <label for="phone">Phone*</label>
-    <input type="tel" name="phone" placeholder="123-456-7890" required>
+    <input type="tel" name="phone" id="phone" placeholder="123-456-7890" required>
   </div>
 
   <div class="contact-field">
     <label for="contactMethod"> Method</label>
-    <select name="contactMethod">
+    <select name="contactMethod" id="contactMethod">
       <option value=""></option>
       <option value="WhatsApp Message">WhatsApp Message</option>
       <option value="WhatsApp Call">WhatsApp Call</option>
@@ -695,11 +695,11 @@ if (amt < 0){
   <button  type="button" onclick="closeAndSaveFees(${job.job.jobID}, '${job.job.status}')">Close Job</button>
   <button  type="button" id="sendEmailButton" onclick="sendEmail(${job.job.jobID},document.getElementById('ccSPW').value,document.getElementById('taxSPW').value,document.getElementById('emailSPW').value,document.getElementById('nameSPW').value)">Send Invoice</button>    
       <div class="row" >
-      <div style="flex:2;>
+      <div style="flex:2;">
        <h3>Job #${job.job.jobID}</h3>
   </div>
   
-     <div style="flex: 1;>
+     <div style="flex: 1;display:flex; justify-content:flex-end; gap:8px;">
         <button 
           type="button" 
           onclick='editJob(${JSON.stringify(job.job)})'
@@ -996,7 +996,7 @@ async function  addActivity(jobID){
   const formData = new FormData();
   formData.append("action", "addActivity");
   formData.append("jobID",jobID);
-  formData.append("paid",-paid);
+  formData.append("posPaid",paid);
   formData.append("paymentType",paymentType);
   formData.append("charge",charge);
   formData.append("chargeNotes",chargeNotes);
@@ -1016,7 +1016,7 @@ async function  addActivity(jobID){
 <script>
 
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFEux9yCe1VdzH4P4wp62A1nEP81gcFInNNywHktrrHU70J8UbYnzyiXAvJLMKb1pBrg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAhACLFF-T1s-bzvEUdHARN0ERNxGV-bP_riVvc3sCoAvan_DdYjwZxc24EvmlxjBQqA/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
