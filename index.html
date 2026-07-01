@@ -378,10 +378,7 @@
         <option value="White Lake">White Lake</option>
         <option value="other">Other</option>
     </select>
-    
-        <label for="date">Date*</label>
-    <input type="date" name="date" id="editDate" required>
-    
+        
       <label for="machine">Machine/Brand</label>
   <input name="machine" type="text" id="editMachine">
   
@@ -861,7 +858,6 @@ function editPriceStuff(){
         document.getElementById("editAltContact").value = currentJob.phone2Method || "";
         document.getElementById("editAddress").value = currentJob.address || "";
         document.getElementById("editLocation").value = currentJob.zone || "";
-        document.getElementById("editDate").value = currentJob.date?.split("T")[0] || "";
         document.getElementById("editMachine").value = currentJob.machine || "";
         document.getElementById("editLastName").value = currentJob.lastName || "";
         document.getElementById("editExtraNotes").value = currentJob.notes || "";
