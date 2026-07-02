@@ -152,6 +152,9 @@
 <form  id="bookingForm" class="tab-form" method="POST">
   <h2>Book an Appointment</h2>
     
+    <label for="lastName">Last Name</label>
+  <input name="lastName" id="lastName" placeholder="Doe" >
+  
     <div class="row">
   <div class="phone-field">
     <label for="phone">Phone*</label>
@@ -175,12 +178,12 @@
       <div class="row">
   <div class="phone-field">
     <label for="altPhone">Alt Phone</label>
-    <input type="tel" name="altPhone" placeholder="123-456-7890" >
+    <input type="tel" name="altPhone" id="altPhone" placeholder="123-456-7890" >
   </div>
 
   <div class="contact-field">
     <label for="altContactMethod">Method</label>
-    <select name="altContactMethod">
+    <select name="altContactMethod" id="altContact">
       <option value=""></option>
       <option value="WhatsApp Message">WhatsApp Message</option>
       <option value="WhatsApp Call">WhatsApp Call</option>
@@ -195,7 +198,7 @@
   
 
     <label for="address">Address*</label>
-  <input type="text" name="address" placeholder="123 Make Belive Dr, Brooklyn NY 11210" required>
+  <input type="text" name="address" id="address" placeholder="123 Make Belive Dr, Brooklyn NY 11210" required>
     
         <label for="location">Location*</label>
     <select name="location" id="location" required>
@@ -204,6 +207,7 @@
     <option value="South Fallsburg">South Fallsburg</option>
     <option value="Fallsburg">Fallsburg</option>
     <option value="Loch Sheldrake">Loch Sheldrake</option>
+    <option value="Hurlyville">Hurlyville</option>
     <option value="Monticello">Monticello</option>
     <option value="Woodbourne">Woodbourne</option>
     <option value="Ellenville">Ellenville</option>
@@ -218,13 +222,10 @@
     <input type="date" name="date" id="date" required>
     
       <label for="machine">Machine/Brand</label>
-  <input name="machine" type="text" >
+  <input name="machine" id="machine" type="text" >
   
-  <label for="lastName">Last Name</label>
-  <input name="lastName" placeholder="Doe" >
-
   <label for="extraNotes">Additional Notes</label>
-  <textarea name="extraNotes" placeholder="Any extra notes..."></textarea>
+  <textarea name="extraNotes" id="extraNotes" placeholder="Any extra notes..."></textarea>
 
   <button type="submit" name="action" value="createAppointment">Book Appointment</button>
 </form>
@@ -368,6 +369,7 @@
     <option value="Woodridge">Woodridge</option>
     <option value="South Fallsburg">South Fallsburg</option>
     <option value="Fallsburg">Fallsburg</option>
+    <option value="Hurlyville">Hurlyville</option>
     <option value="Loch Sheldrake">Loch Sheldrake</option>
     <option value="Monticello">Monticello</option>
     <option value="Woodbourne">Woodbourne</option>
@@ -1016,7 +1018,7 @@ async function  addActivity(jobID){
 <script>
 
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAhACLFF-T1s-bzvEUdHARN0ERNxGV-bP_riVvc3sCoAvan_DdYjwZxc24EvmlxjBQqA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHCxMsdm9Y3mKGE68KUH52goVZQJOxRGKvbagAJVvixqf5xNdE8q33uG3f31FFSbe5Dg/exec";
 
   document.getElementById("bookingForm").action = SCRIPT_URL;
   document.getElementById("Notes").action = SCRIPT_URL;
